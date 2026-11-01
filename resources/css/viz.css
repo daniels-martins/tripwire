@@ -1,0 +1,76 @@
+/* Tripwire data-visualization palette.
+   Validated with the dataviz palette validator: all checks pass in both modes.
+   Light mode WARN: aqua/yellow/magenta sit below 3:1 on the light surface, so
+   charts MUST ship visible direct labels or a table view. Not optional. */
+
+@theme static {
+    /* Categorical — assigned once, alphabetically, to the full provider list.
+       Never reassign when a provider is dropped: slot 6 just goes unused.
+       Colour follows the entity, never its rank. */
+    --color-series-1: #2a78d6;   /* Across       */
+    --color-series-2: #eb6834;   /* Jupiter      */
+    --color-series-3: #1baf7a;   /* LiFi         */
+    --color-series-4: #eda100;   /* NEAR Intents */
+    --color-series-5: #e87ba4;   /* Relay        */
+    --color-series-6: #008300;   /* Thorchain    */
+
+    /* Status — reserved. Never used for a series. Always with an icon + label. */
+    --color-status-good: #0ca30c;
+    --color-status-warning: #fab219;
+    --color-status-serious: #ec835a;
+    --color-status-critical: #d03b3b;
+
+    /* Sequential ramp (single hue) for the size-curve heatmap. */
+    --color-seq-100: #cde2fb;
+    --color-seq-200: #9ec5f4;
+    --color-seq-300: #5598e7;
+    --color-seq-400: #2a78d6;
+    --color-seq-500: #184f95;
+
+    /* Chart chrome */
+    --color-viz-surface: #fcfcfb;
+    --color-viz-plane: #f9f9f7;
+    --color-viz-ink: #0b0b0b;
+    --color-viz-ink-soft: #52514e;
+    --color-viz-ink-muted: #898781;
+    --color-viz-grid: #e1e0d9;
+    --color-viz-axis: #c3c2b7;
+}
+
+/* Dark steps are selected for the dark surface, not an automatic flip. */
+.dark {
+    --color-series-1: #3987e5;
+    --color-series-2: #d95926;
+    --color-series-3: #199e70;
+    --color-series-4: #c98500;
+    --color-series-5: #d55181;
+    --color-series-6: #008300;
+
+    --color-seq-100: #184f95;
+    --color-seq-200: #256abf;
+    --color-seq-300: #3987e5;
+    --color-seq-400: #86b6ef;
+    --color-seq-500: #cde2fb;
+
+    --color-viz-surface: #1a1a19;
+    --color-viz-plane: #0d0d0d;
+    --color-viz-ink: #f0efec;
+    --color-viz-ink-soft: #c3c2b7;
+    --color-viz-ink-muted: #898781;
+    --color-viz-grid: #2c2c2a;
+    --color-viz-axis: #383835;
+}
+
+/* Columns that must align vertically. NOT for large standalone figures. */
+.tabular {
+    font-variant-numeric: tabular-nums;
+}
+
+/* Motion is functional only. */
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
