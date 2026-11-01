@@ -48,7 +48,16 @@ new #[Layout('layouts.public')] #[Title('Investment thesis')] class extends Comp
 
         // The memo puts Generated / Data window / Total quotes on their own lines;
         // CommonMark folds single newlines into one paragraph, so keep the breaks.
-        return Str::markdown($markdown, ['renderer' => ['soft_break' => '<br>']]);
+        $html = Str::markdown($markdown, ['renderer' => ['soft_break' => '<br>']]);
+
+        // CommonMark emits bare <table> elements. Without a wrapper they are wider
+        // than a phone viewport and drag the whole page sideways, so give each one
+        // its own scroll container.
+        return preg_replace(
+            '/<table>(.*?)<\/table>/s',
+            '<div class="memo-scroll"><table>$1</table></div>',
+            $html
+        );
     }
 
     #[Computed]
@@ -72,18 +81,13 @@ new #[Layout('layouts.public')] #[Title('Investment thesis')] class extends Comp
 <div class="min-h-screen bg-viz-plane text-viz-ink">
     <div class="mx-auto max-w-3xl px-6 py-10">
 
-        <header class="mb-8 flex items-start justify-between gap-4">
+        <header class="mb-8">
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Investment thesis</h1>
                 <p class="mt-1 text-sm text-viz-ink-soft">
                     Regenerated from live data. The numbers refresh; the argument does not.
                 </p>
             </div>
-            <flux:radio.group x-data variant="segmented" size="sm" x-model="$flux.appearance">
-                <flux:radio value="light" icon="sun" />
-                <flux:radio value="dark" icon="moon" />
-                <flux:radio value="system" icon="computer-desktop" />
-            </flux:radio.group>
         </header>
 
         @if (count($this->tripwires) === 0)

@@ -125,7 +125,7 @@ new #[Layout('layouts.public')] #[Title('Size impact')] class extends Component
 <div class="min-h-screen bg-viz-plane text-viz-ink">
     <div class="mx-auto max-w-5xl px-6 py-10">
 
-        <header class="mb-8 flex items-start justify-between gap-4">
+        <header class="mb-8">
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Size impact</h1>
                 <p class="mt-1 text-sm text-viz-ink-soft">
@@ -133,11 +133,6 @@ new #[Layout('layouts.public')] #[Title('Size impact')] class extends Component
                     expensive large has thin liquidity, and that is where depth shows.
                 </p>
             </div>
-            <flux:radio.group x-data variant="segmented" size="sm" x-model="$flux.appearance">
-                <flux:radio value="light" icon="sun" />
-                <flux:radio value="dark" icon="moon" />
-                <flux:radio value="system" icon="computer-desktop" />
-            </flux:radio.group>
         </header>
 
         <div class="mb-4 flex flex-wrap items-end gap-3">

@@ -62,7 +62,7 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
 <div class="min-h-screen bg-viz-plane text-viz-ink">
     <div class="mx-auto max-w-6xl px-6 py-10">
 
-        <header class="mb-8 flex items-start justify-between gap-4">
+        <header class="mb-8">
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Settlements</h1>
                 <p class="mt-1 text-sm text-viz-ink-soft">
@@ -70,11 +70,6 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
                     Quotes are a promise; these are the transactions that actually happened.
                 </p>
             </div>
-            <flux:radio.group x-data variant="segmented" size="sm" x-model="$flux.appearance">
-                <flux:radio value="light" icon="sun" />
-                <flux:radio value="dark" icon="moon" />
-                <flux:radio value="system" icon="computer-desktop" />
-            </flux:radio.group>
         </header>
 
         @unless ($this->slippageMeasurable)

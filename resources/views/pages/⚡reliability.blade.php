@@ -97,7 +97,7 @@ new #[Layout('layouts.public')] #[Title('Reliability')] class extends Component
 <div class="min-h-screen bg-viz-plane text-viz-ink">
     <div class="mx-auto max-w-5xl px-6 py-10">
 
-        <header class="mb-8 flex items-start justify-between gap-4">
+        <header class="mb-8">
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Reliability</h1>
                 <p class="mt-1 text-sm text-viz-ink-soft">
@@ -105,11 +105,6 @@ new #[Layout('layouts.public')] #[Title('Reliability')] class extends Component
                     coverage gap, and gaps are as much a finding as price.
                 </p>
             </div>
-            <flux:radio.group x-data variant="segmented" size="sm" x-model="$flux.appearance">
-                <flux:radio value="light" icon="sun" />
-                <flux:radio value="dark" icon="moon" />
-                <flux:radio value="system" icon="computer-desktop" />
-            </flux:radio.group>
         </header>
 
         <div class="mb-4 flex flex-wrap items-end gap-3">
@@ -193,7 +188,7 @@ new #[Layout('layouts.public')] #[Title('Reliability')] class extends Component
         @if (count($this->errors) > 0)
             <div class="mt-6">
                 <h2 class="mb-2 text-sm font-semibold">Why quotes failed</h2>
-                <div class="overflow-hidden rounded-xl border border-viz-grid bg-viz-surface">
+                <div class="overflow-x-auto rounded-xl border border-viz-grid bg-viz-surface">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-viz-grid text-left text-xs text-viz-ink-muted">
