@@ -5,6 +5,9 @@ set -e
 
 cd /var/www/html
 
+echo "Building frontend assets..."
+npm install && npm run build
+
 echo "Running migrations..."
 php artisan migrate --force --no-interaction
 
