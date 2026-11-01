@@ -100,7 +100,6 @@ return [
             'to' => 'ETH',
             'label' => 'SOL → ETH',
             'binance_symbol' => 'SOLETH',
-            'binance_invert' => true,
             'origin_asset' => 'nep141:sol.omft.near',
             'origin_decimals' => 9,
             'destination_asset' => 'nep141:eth.omft.near',
