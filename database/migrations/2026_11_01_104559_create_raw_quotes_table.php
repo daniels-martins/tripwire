@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('trade_size');
             $table->decimal('quoted_output', 20, 8);
             $table->decimal('reference_price', 20, 8);
-            $table->decimal('spread_bps', 10, 4);
+            $table->decimal('spread_bps', 16, 4);
             $table->jsonb('raw_response')->nullable();
             $table->timestamp('quoted_at');
             $table->jsonb('extra')->nullable();
