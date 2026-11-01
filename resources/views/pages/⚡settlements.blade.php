@@ -48,9 +48,9 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
     }
 
     /**
-     * delivered_amount is produced by SettlementIngester::estimateDeliveredAmount(),
-     * which multiplies the deposit by our own reference price. Until it is read from
-     * the transaction itself, any slippage derived from it is zero by construction.
+     * SettlementIngester writes delivered_amount as null: it is not parsed out of the
+     * settlement transaction yet. Until it is, there is no delivered figure to compare
+     * a quote against, so the page says so rather than implying a measurement.
      */
     #[Computed]
     public function slippageMeasurable(): bool
@@ -84,11 +84,10 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
                 </svg>
                 <p class="text-sm">
                     <span class="font-medium">Slippage is not measurable yet.</span>
-                    Deposits, transaction hashes and block heights below are read from the chain.
-                    The delivered column is <em>estimated</em> by multiplying the deposit by our own
-                    reference price, so comparing the two would return zero by construction. Quoted
-                    versus delivered becomes a real check once the delivered amount is parsed from
-                    the transaction itself.
+                    Deposits, transaction hashes and block heights below are read from the chain and
+                    can be checked on NearBlocks. The delivered amount is not captured — it is not
+                    yet parsed out of the settlement transaction — so there is nothing to compare a
+                    quote against. Quoted versus delivered becomes a real check once that lands.
                 </p>
             </div>
         @endunless
@@ -122,7 +121,7 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
                         <th class="px-4 py-2.5 text-right font-medium">Deposited</th>
                         <th class="px-4 py-2.5 text-right font-medium">
                             Delivered
-                            <span class="font-normal italic">(est.)</span>
+                            <span class="font-normal italic">(not captured)</span>
                         </th>
                         <th class="px-4 py-2.5 text-right font-medium">Block</th>
                         <th class="px-4 py-2.5 text-right font-medium">Settled</th>
