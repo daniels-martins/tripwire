@@ -1,10 +1,6 @@
 <?php
 
-use App\Services\Providers\AcrossProvider;
-use App\Services\Providers\DeBridgeProvider;
 use App\Services\Providers\OneClickProvider;
-use App\Services\Providers\RelayProvider;
-use App\Services\Providers\StargateProvider;
 
 return [
     'one-click' => [
@@ -17,7 +13,7 @@ return [
 
     'relay' => [
         'name' => 'Relay',
-        'class' => RelayProvider::class,
+        'class' => 'App\Services\Providers\RelayProvider',
         'enabled' => env('RELAY_ENABLED', false),
         'base_url' => 'https://api.relay.link',
         'api_key' => env('RELAY_API_KEY'),
@@ -25,7 +21,7 @@ return [
 
     'stargate' => [
         'name' => 'Stargate',
-        'class' => StargateProvider::class,
+        'class' => 'App\Services\Providers\StargateProvider',
         'enabled' => env('STARGATE_ENABLED', false),
         'base_url' => 'https://api.stargate.finance',
         'api_key' => env('STARGATE_API_KEY'),
@@ -33,7 +29,7 @@ return [
 
     'across' => [
         'name' => 'Across',
-        'class' => AcrossProvider::class,
+        'class' => 'App\Services\Providers\AcrossProvider',
         'enabled' => env('ACROSS_ENABLED', false),
         'base_url' => 'https://app.across.to/api',
         'api_key' => env('ACROSS_API_KEY'),
@@ -41,7 +37,7 @@ return [
 
     'debridge' => [
         'name' => 'deBridge',
-        'class' => DeBridgeProvider::class,
+        'class' => 'App\Services\Providers\DeBridgeProvider',
         'enabled' => env('DEBRIDGE_ENABLED', false),
         'base_url' => 'https://deswap.debridge.finance/v1.0',
         'api_key' => env('DEBRIDGE_API_KEY'),
