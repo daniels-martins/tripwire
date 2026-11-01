@@ -3,23 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\RawQuote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SizeCurveController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $corridor = $request->query('corridor');
-
-        $query = RawQuote::query()
-            ->selectRaw('provider, trade_size, AVG(spread_bps) as avg_spread_bps, COUNT(*) as sample_count')
-            ->groupBy('provider', 'trade_size')
+        $query = DB::table('mv_size_curve')
             ->orderBy('provider')
-            ->orderByRaw("CASE trade_size WHEN 'small' THEN 1 WHEN 'medium' THEN 2 WHEN 'large' THEN 3 END");
+            ->orderBy('size_usd');
 
-        if ($corridor) {
+        if ($corridor = $request->query('corridor')) {
             $query->where('corridor', $corridor);
         }
 

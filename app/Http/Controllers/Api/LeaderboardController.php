@@ -3,27 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\RawQuote;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LeaderboardController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $corridor = $request->query('corridor');
-        $size = $request->query('size', 'medium');
+        $query = DB::table('v_leaderboard')
+            ->orderBy('median_spread_bps');
 
-        $query = RawQuote::query()
-            ->selectRaw('provider, COUNT(*) as sample_count, AVG(spread_bps) as avg_spread_bps')
-            ->groupBy('provider')
-            ->orderBy('avg_spread_bps');
-
-        if ($corridor) {
+        if ($corridor = $request->query('corridor')) {
             $query->where('corridor', $corridor);
         }
 
-        if ($size) {
+        if ($size = $request->query('size')) {
             $query->where('trade_size', $size);
         }
 

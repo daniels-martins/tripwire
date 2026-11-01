@@ -11,10 +11,21 @@ use Illuminate\Support\Facades\DB;
 #[Description('Refresh materialized views for dashboard analytics')]
 class RefreshViews extends Command
 {
+    /** @var list<string> */
+    private const VIEWS = [
+        'v_leaderboard',
+        'mv_spread_series',
+        'mv_size_curve',
+        'mv_settlement_accuracy',
+        'mv_corridor_coverage',
+    ];
+
     public function handle(): int
     {
-        DB::statement('REFRESH MATERIALIZED VIEW CONCURRENTLY v_leaderboard');
-        $this->info('Refreshed v_leaderboard.');
+        foreach (self::VIEWS as $view) {
+            DB::statement("REFRESH MATERIALIZED VIEW CONCURRENTLY {$view}");
+            $this->info("Refreshed {$view}.");
+        }
 
         return self::SUCCESS;
     }
