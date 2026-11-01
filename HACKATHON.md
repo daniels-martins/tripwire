@@ -17,6 +17,7 @@ cd tripwire
 cp .env.example .env
 ./vendor/bin/sail up -d
 ./vendor/bin/sail shell
+npm install && npm run build
 bash docker/entrypoint.sh
 exit
 ```
