@@ -26,6 +26,7 @@ class FetchQuoteJob implements ShouldQueue
         public readonly array $corridorConfig,
         public readonly string $sizeKey,
         public readonly float $sizeUsd,
+        public readonly string $batchId,
     ) {}
 
     public function handle(ReferencePriceFetcher $priceFetcher): void
@@ -38,6 +39,8 @@ class FetchQuoteJob implements ShouldQueue
             return;
         }
 
+        $start = hrtime(true);
+
         $quote = $provider->getQuote(
             $this->corridorKey,
             $this->corridorConfig,
@@ -45,11 +48,22 @@ class FetchQuoteJob implements ShouldQueue
             $this->sizeUsd,
         );
 
+        $latencyMs = (int) ((hrtime(true) - $start) / 1_000_000);
+
         if (! $quote) {
-            Log::info('No quote returned', [
+            RawQuote::create([
+                'batch_id' => $this->batchId,
                 'provider' => $provider->name(),
                 'corridor' => $this->corridorKey,
-                'size' => $this->sizeKey,
+                'trade_size' => $this->sizeKey,
+                'size_usd' => (int) $this->sizeUsd,
+                'quoted_output' => 0,
+                'reference_price' => 0,
+                'spread_bps' => 0,
+                'latency_ms' => $latencyMs,
+                'ok' => false,
+                'error' => 'No quote returned',
+                'quoted_at' => now(),
             ]);
 
             return;
@@ -67,12 +81,16 @@ class FetchQuoteJob implements ShouldQueue
         }
 
         RawQuote::create([
+            'batch_id' => $this->batchId,
             'provider' => $quote->provider,
             'corridor' => $quote->corridor,
             'trade_size' => $quote->tradeSize,
+            'size_usd' => (int) $this->sizeUsd,
             'quoted_output' => $quote->quotedOutput,
             'reference_price' => $referencePrice ?? 0,
             'spread_bps' => $spreadBps ?? 0,
+            'latency_ms' => $latencyMs,
+            'ok' => true,
             'raw_response' => $quote->rawResponse,
             'quoted_at' => now(),
         ]);
