@@ -20,6 +20,9 @@ class FetchQuoteJob implements ShouldQueue
 
     public int $timeout = 60;
 
+    /**
+     * @param  array<string, mixed>  $corridorConfig
+     */
     public function __construct(
         public readonly string $providerClass,
         public readonly string $corridorKey,

@@ -4,6 +4,9 @@ namespace App\DTOs;
 
 class QuoteResult
 {
+    /**
+     * @param  array<string, mixed>  $rawResponse
+     */
     public function __construct(
         public readonly string $provider,
         public readonly string $corridor,

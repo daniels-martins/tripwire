@@ -18,6 +18,9 @@ class OneClickProvider implements QuoteProvider
         return config('providers.one-click.enabled', true);
     }
 
+    /**
+     * @param  array<string, mixed>  $corridorConfig
+     */
     public function getQuote(string $corridorKey, array $corridorConfig, string $sizeKey, float $sizeUsd): ?QuoteResult
     {
         try {
@@ -93,6 +96,9 @@ class OneClickProvider implements QuoteProvider
         }
     }
 
+    /**
+     * @param  array<string, mixed>  $corridorConfig
+     */
     private function computeBaseAmount(float $sizeUsd, array $corridorConfig): ?string
     {
         $symbol = $corridorConfig['binance_symbol'];
@@ -136,7 +142,7 @@ class OneClickProvider implements QuoteProvider
                 $tokenAmount = $sizeUsd / $originPriceUsd;
             }
 
-            $decimals = $corridorConfig['origin_decimals'];
+            $decimals = (int) $corridorConfig['origin_decimals'];
             $baseAmount = bcmul((string) $tokenAmount, bcpow('10', (string) $decimals, 0), 0);
 
             return $baseAmount;

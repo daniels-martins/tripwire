@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Log;
 
 class ReferencePriceFetcher
 {
+    /**
+     * @param  array<string, mixed>  $corridorConfig
+     */
     public function fetchForCorridor(string $corridorKey, array $corridorConfig): ?float
     {
         $symbol = $corridorConfig['binance_symbol'];
