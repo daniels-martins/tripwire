@@ -3,22 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Settlement;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SettlementController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $corridor = $request->query('corridor');
-
-        $query = Settlement::query()
-            ->selectRaw('corridor, COUNT(*) as count, AVG(slippage_bps) as avg_slippage_bps')
-            ->groupBy('corridor')
+        $query = DB::table('mv_settlement_accuracy')
             ->orderBy('corridor');
 
-        if ($corridor) {
+        if ($corridor = $request->query('corridor')) {
             $query->where('corridor', $corridor);
         }
 
