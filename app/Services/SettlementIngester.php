@@ -2,9 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\ReferencePrice;
 use App\Models\Settlement;
-use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -290,14 +288,12 @@ class SettlementIngester
             ? Carbon::createFromTimestampMs((int) ($timestamp / 1_000_000))
             : now();
 
-        $deliveredAmount = $this->estimateDeliveredAmount($depositAmount, $corridor, $settledAt);
-
         Settlement::create([
             'tx_hash' => $txHash,
             'provider' => 'one-click',
             'corridor' => $corridor,
             'quoted_amount' => $depositAmount,
-            'delivered_amount' => $deliveredAmount,
+            'delivered_amount' => null,
             'slippage_bps' => null,
             'block_height' => $blockHeight,
             'settled_at' => $settledAt,
@@ -370,41 +366,6 @@ class SettlementIngester
         }
 
         return bcdiv($baseUnits, bcpow('10', (string) $decimals, 0), $decimals);
-    }
-
-    private function estimateDeliveredAmount(string $depositAmount, string $corridor, CarbonInterface $settledAt): ?string
-    {
-        $corridorConfig = config("corridors.pairs.{$corridor}");
-        $invert = $corridorConfig['binance_invert'] ?? false;
-
-        $refPrice = $this->findReferencePrice($corridor, $settledAt);
-
-        if (! $refPrice) {
-            return null;
-        }
-
-        $price = (float) $refPrice->price;
-        if ($invert) {
-            $price = 1 / $price;
-        }
-
-        return number_format((float) $depositAmount * $price, 8, '.', '');
-    }
-
-    private function findReferencePrice(string $corridor, CarbonInterface $settledAt): ?ReferencePrice
-    {
-        $refPrice = ReferencePrice::where('pair', $corridor)
-            ->where('fetched_at', '<=', $settledAt)
-            ->orderByDesc('fetched_at')
-            ->first();
-
-        if ($refPrice) {
-            return $refPrice;
-        }
-
-        return ReferencePrice::where('pair', $corridor)
-            ->orderBy('fetched_at')
-            ->first();
     }
 
     private function buildTokenMap(): void
