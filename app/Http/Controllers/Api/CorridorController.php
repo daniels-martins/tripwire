@@ -10,12 +10,12 @@ class CorridorController extends Controller
 {
     public function index(): JsonResponse
     {
-        $pairs = config('corridors.pairs');
-        $providers = collect(config('providers'))
-            ->filter(fn ($p) => $p['enabled'])
+        $pairs = (array) config('corridors.pairs');
+        $providers = collect((array) config('providers'))
+            ->filter(fn (array $p) => $p['enabled'])
             ->keys();
 
-        $corridors = collect($pairs)->map(fn ($pair, $key) => [
+        $corridors = collect($pairs)->map(fn (mixed $pair, string $key) => [
             'key' => $key,
             'label' => $pair['label'],
             'from' => $pair['from'],
