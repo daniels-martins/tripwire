@@ -60,3 +60,18 @@
         transition-duration: 0.01ms !important;
     }
 }
+
+/* Sequential heatmap steps. The ramp inverts between modes (lightest recedes
+   into whichever surface is behind it), so each step carries its own readable
+   ink for that mode rather than guessing from the value. */
+.seq-1 { background-color: var(--color-seq-100); color: #0b0b0b; }
+.seq-2 { background-color: var(--color-seq-200); color: #0b0b0b; }
+.seq-3 { background-color: var(--color-seq-300); color: #0b0b0b; }
+.seq-4 { background-color: var(--color-seq-400); color: #fcfcfb; }
+.seq-5 { background-color: var(--color-seq-500); color: #fcfcfb; }
+
+.dark .seq-1 { color: #f0efec; }
+.dark .seq-2 { color: #f0efec; }
+.dark .seq-3 { color: #0b0b0b; }
+.dark .seq-4 { color: #0b0b0b; }
+.dark .seq-5 { color: #0b0b0b; }
