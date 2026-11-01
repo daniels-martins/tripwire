@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Settlement extends Model
@@ -30,7 +31,10 @@ class Settlement extends Model
         ];
     }
 
-    public function scopeForCorridor($query, string $corridor): void
+    /**
+     * @param  Builder<self>  $query
+     */
+    public function scopeForCorridor(Builder $query, string $corridor): void
     {
         $query->where('corridor', $corridor);
     }

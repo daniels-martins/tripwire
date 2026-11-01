@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class RawQuote extends Model
@@ -37,17 +38,26 @@ class RawQuote extends Model
         ];
     }
 
-    public function scopeForCorridor($query, string $corridor): void
+    /**
+     * @param  Builder<self>  $query
+     */
+    public function scopeForCorridor(Builder $query, string $corridor): void
     {
         $query->where('corridor', $corridor);
     }
 
-    public function scopeForProvider($query, string $provider): void
+    /**
+     * @param  Builder<self>  $query
+     */
+    public function scopeForProvider(Builder $query, string $provider): void
     {
         $query->where('provider', $provider);
     }
 
-    public function scopeForSize($query, string $size): void
+    /**
+     * @param  Builder<self>  $query
+     */
+    public function scopeForSize(Builder $query, string $size): void
     {
         $query->where('trade_size', $size);
     }
