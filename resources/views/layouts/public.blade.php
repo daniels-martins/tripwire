@@ -6,5 +6,6 @@
     <body class="min-h-screen antialiased">
         {{ $slot }}
         @fluxScripts
+        @stack('scripts')
     </body>
 </html>
