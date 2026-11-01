@@ -16,7 +16,7 @@ class TripwireController extends Controller
             'status' => $t->status,
             'threshold' => $t->threshold_value,
             'current' => $t->current_value,
-            'last_evaluated' => $t->last_evaluated_at?->toIso8601String(),
+            'last_evaluated' => $t->last_evaluated_at,
         ]);
 
         return response()->json(['tripwires' => $tripwires]);
