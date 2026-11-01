@@ -1,0 +1,62 @@
+@theme static {
+    --color-series-1: #2a78d6;
+    --color-series-2: #eb6834;
+    --color-series-3: #1baf7a;
+    --color-series-4: #eda100;
+    --color-series-5: #e87ba4;
+    --color-series-6: #008300;
+
+    --color-status-good: #0ca30c;
+    --color-status-warning: #fab219;
+    --color-status-serious: #ec835a;
+    --color-status-critical: #d03b3b;
+
+    --color-seq-100: #cde2fb;
+    --color-seq-200: #9ec5f4;
+    --color-seq-300: #5598e7;
+    --color-seq-400: #2a78d6;
+    --color-seq-500: #184f95;
+
+    --color-viz-surface: #fcfcfb;
+    --color-viz-plane: #f9f9f7;
+    --color-viz-ink: #0b0b0b;
+    --color-viz-ink-soft: #52514e;
+    --color-viz-ink-muted: #898781;
+    --color-viz-grid: #e1e0d9;
+    --color-viz-axis: #c3c2b7;
+}
+
+.dark {
+    --color-series-1: #3987e5;
+    --color-series-2: #d95926;
+    --color-series-3: #199e70;
+    --color-series-4: #c98500;
+    --color-series-5: #d55181;
+    --color-series-6: #008300;
+
+    --color-seq-100: #184f95;
+    --color-seq-200: #256abf;
+    --color-seq-300: #3987e5;
+    --color-seq-400: #86b6ef;
+    --color-seq-500: #cde2fb;
+
+    --color-viz-surface: #1a1a19;
+    --color-viz-plane: #0d0d0d;
+    --color-viz-ink: #f0efec;
+    --color-viz-ink-soft: #c3c2b7;
+    --color-viz-ink-muted: #898781;
+    --color-viz-grid: #2c2c2a;
+    --color-viz-axis: #383835;
+}
+
+.tabular {
+    font-variant-numeric: tabular-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
