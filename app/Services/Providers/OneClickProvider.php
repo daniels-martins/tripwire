@@ -101,47 +101,16 @@ class OneClickProvider implements QuoteProvider
      */
     private function computeBaseAmount(float $sizeUsd, array $corridorConfig): ?string
     {
-        $symbol = $corridorConfig['binance_symbol'];
-        $invert = $corridorConfig['binance_invert'] ?? false;
+        $from = $corridorConfig['from'];
 
         try {
-            $response = Http::get('https://api.binance.com/api/v3/ticker/price', [
-                'symbol' => $symbol,
-            ]);
+            $originPriceUsd = $this->fetchOriginPriceUsd($from);
 
-            if (! $response->successful()) {
+            if (! $originPriceUsd || $originPriceUsd <= 0) {
                 return null;
             }
 
-            $price = (float) $response->json('price');
-            if ($price <= 0) {
-                return null;
-            }
-
-            if ($invert) {
-                $originSymbol = $corridorConfig['from'].'USDC';
-                $priceResponse = Http::get('https://api.binance.com/api/v3/ticker/price', [
-                    'symbol' => $originSymbol,
-                ]);
-
-                if (! $priceResponse->successful()) {
-                    $originSymbol = $corridorConfig['from'].'USDT';
-                    $priceResponse = Http::get('https://api.binance.com/api/v3/ticker/price', [
-                        'symbol' => $originSymbol,
-                    ]);
-                }
-
-                if (! $priceResponse->successful()) {
-                    return null;
-                }
-
-                $originPriceUsd = (float) $priceResponse->json('price');
-                $tokenAmount = $sizeUsd / $originPriceUsd;
-            } else {
-                $originPriceUsd = $price;
-                $tokenAmount = $sizeUsd / $originPriceUsd;
-            }
-
+            $tokenAmount = $sizeUsd / $originPriceUsd;
             $decimals = (int) $corridorConfig['origin_decimals'];
             $baseAmount = bcmul((string) $tokenAmount, bcpow('10', (string) $decimals, 0), 0);
 
@@ -151,6 +120,32 @@ class OneClickProvider implements QuoteProvider
 
             return null;
         }
+    }
+
+    private function fetchOriginPriceUsd(string $token): ?float
+    {
+        if (in_array($token, ['USDC', 'USDT'])) {
+            return 1.0;
+        }
+
+        foreach ([$token.'USDC', $token.'USDT'] as $symbol) {
+            try {
+                $response = Http::get('https://api.binance.com/api/v3/ticker/price', [
+                    'symbol' => $symbol,
+                ]);
+
+                if ($response->successful()) {
+                    $price = (float) $response->json('price');
+                    if ($price > 0) {
+                        return $price;
+                    }
+                }
+            } catch (\Throwable) {
+                continue;
+            }
+        }
+
+        return null;
     }
 
     private function getPlaceholderAddress(string $type, string $token): string
