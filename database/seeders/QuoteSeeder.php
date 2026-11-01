@@ -21,9 +21,9 @@ class QuoteSeeder extends Seeder
     ];
 
     private const CORRIDORS = [
-        'BTC->USDC.SOL'    => ['across', 'lifi', 'near_intents', 'relay', 'thorchain'],
-        'ETH->USDC.ARB'    => ['across', 'jupiter', 'lifi', 'near_intents', 'relay'],
-        'SOL->USDC.ETH'    => ['jupiter', 'lifi', 'near_intents', 'relay'],
+        'BTC->USDC.SOL' => ['across', 'lifi', 'near_intents', 'relay', 'thorchain'],
+        'ETH->USDC.ARB' => ['across', 'jupiter', 'lifi', 'near_intents', 'relay'],
+        'SOL->USDC.ETH' => ['jupiter', 'lifi', 'near_intents', 'relay'],
         'USDT.TRX->USDC.SOL' => ['near_intents', 'thorchain'],
     ];
 
