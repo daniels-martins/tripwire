@@ -75,3 +75,29 @@
 .dark .seq-3 { color: #0b0b0b; }
 .dark .seq-4 { color: #0b0b0b; }
 .dark .seq-5 { color: #0b0b0b; }
+
+/* Memo prose. Hand-rolled rather than pulling in a typography plugin, since the
+   build has to stay offline-safe and this is the only long-form page. */
+.memo { color: var(--color-viz-ink); line-height: 1.65; }
+.memo > * + * { margin-top: 1rem; }
+.memo h1 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.02em; margin-top: 2rem; }
+.memo h2 { font-size: 1.125rem; font-weight: 600; margin-top: 2rem; padding-top: 1.5rem;
+           border-top: 1px solid var(--color-viz-grid); }
+.memo h3 { font-size: 0.95rem; font-weight: 600; margin-top: 1.5rem; }
+.memo p, .memo li { font-size: 0.875rem; }
+.memo ul, .memo ol { padding-left: 1.25rem; }
+.memo ul { list-style: disc; }
+.memo ol { list-style: decimal; }
+.memo li + li { margin-top: 0.35rem; }
+.memo a { text-decoration: underline; text-underline-offset: 2px; }
+.memo code { font-size: 0.8125rem; background: var(--color-viz-grid);
+             padding: 0.1rem 0.3rem; border-radius: 0.25rem; }
+.memo blockquote { border-left: 2px solid var(--color-viz-axis); padding-left: 0.875rem;
+                   color: var(--color-viz-ink-soft); font-style: italic; }
+.memo hr { border: 0; border-top: 1px solid var(--color-viz-grid); }
+.memo table { width: 100%; border-collapse: collapse; font-size: 0.8125rem;
+              font-variant-numeric: tabular-nums; }
+.memo th { text-align: left; font-weight: 500; color: var(--color-viz-ink-muted);
+           border-bottom: 1px solid var(--color-viz-grid); padding: 0.5rem 0.75rem; }
+.memo td { border-bottom: 1px solid var(--color-viz-grid); padding: 0.5rem 0.75rem; }
+.memo tr:last-child td { border-bottom: 0; }
