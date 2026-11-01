@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class ReferencePrice extends Model
@@ -21,7 +22,10 @@ class ReferencePrice extends Model
         ];
     }
 
-    public function scopeLatestForPair($query, string $pair): void
+    /**
+     * @param  Builder<self>  $query
+     */
+    public function scopeLatestForPair(Builder $query, string $pair): void
     {
         $query->where('pair', $pair)->latest('fetched_at');
     }
