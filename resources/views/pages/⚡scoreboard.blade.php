@@ -158,7 +158,11 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                         })) }],
                         plotOptions: { bar: { horizontal: true, barHeight: '45%', borderRadius: 4 } },
                         stroke: { width: 0 },
-                        xaxis: { title: { text: 'Latency (ms)', style: { fontWeight: 500, fontSize: '12px' } } },
+                        xaxis: {
+                            title: { text: 'Latency (ms)', style: { fontWeight: 500, fontSize: '12px' } },
+                            tickAmount: window.innerWidth < 640 ? 3 : 6,
+                            labels: { formatter: v => Math.round(v).toLocaleString() },
+                        },
                         tooltip: { ...vizBase().tooltip, custom: ({ dataPointIndex }) => {
                             const r = rows[dataPointIndex];
                             return '<div style="padding:6px 10px">' + r.name +
@@ -263,7 +267,7 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                     @forelse ($this->rows as $i => $row)
                         <tr wire:key="row-{{ $row->provider }}" class="border-b border-viz-grid/60 last:border-0">
                             <td class="px-4 py-2.5">
-                                <div class="flex items-center gap-2.5">
+                                <div class="flex items-center gap-2.5 whitespace-nowrap">
                                     <span class="size-2.5 shrink-0 rounded-full"
                                           style="background-color: var(--color-series-{{ config('providers.'.$row->provider.'.slot', 1) }})"></span>
                                     <span class="font-medium">{{ config('providers.'.$row->provider.'.name', $row->provider) }}</span>
