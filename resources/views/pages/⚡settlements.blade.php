@@ -124,11 +124,18 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
                     @forelse ($this->rows as $row)
                         <tr wire:key="s-{{ $row->tx_hash }}" class="border-b border-viz-grid/60 last:border-0">
                             <td class="px-4 py-2.5">
-                                <a href="https://nearblocks.io/txns/{{ $row->tx_hash }}"
-                                   target="_blank" rel="noopener noreferrer"
-                                   class="font-mono text-xs underline decoration-dotted underline-offset-2 hover:decoration-solid">
-                                    {{ substr($row->tx_hash, 0, 10) }}…
-                                </a>
+                                @if (\App\Support\DemoData::isDemoHash($row->tx_hash))
+                                    <span class="font-mono text-xs text-viz-ink-muted"
+                                          title="Seeded demo row — not a real transaction">
+                                        {{ substr($row->tx_hash, 0, 10) }}… <span class="not-italic">(demo)</span>
+                                    </span>
+                                @else
+                                    <a href="https://nearblocks.io/txns/{{ $row->tx_hash }}"
+                                       target="_blank" rel="noopener noreferrer"
+                                       class="font-mono text-xs underline decoration-dotted underline-offset-2 hover:decoration-solid">
+                                        {{ substr($row->tx_hash, 0, 10) }}…
+                                    </a>
+                                @endif
                             </td>
                             <td class="px-4 py-2.5">{{ $this->corridorLabels[$row->corridor] ?? $row->corridor }}</td>
                             <td class="tabular px-4 py-2.5 text-right">{{ rtrim(rtrim(number_format($row->quoted_amount, 6), '0'), '.') }}</td>

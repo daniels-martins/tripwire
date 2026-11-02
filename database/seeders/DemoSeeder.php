@@ -130,6 +130,9 @@ class DemoSeeder extends Seeder
                         'ok' => $ok,
                         'error' => $ok ? null : 'Simulated timeout',
                         'quoted_at' => $batchTime,
+                        // Marks the row as fabricated. Every page checks for this
+                        // and says so; nothing here was measured.
+                        'extra' => ['demo' => true],
                     ]);
                 }
             }
@@ -155,7 +158,7 @@ class DemoSeeder extends Seeder
                 $depositAmount = $depositUsd / $originPriceUsd;
 
                 Settlement::create([
-                    'tx_hash' => Str::random(44),
+                    'tx_hash' => 'demo-'.Str::random(39),
                     'provider' => 'one-click',
                     'corridor' => $corridor,
                     'quoted_amount' => number_format($depositAmount, 8, '.', ''),
@@ -163,7 +166,7 @@ class DemoSeeder extends Seeder
                     'slippage_bps' => null,
                     'block_height' => $blockHeight + rand(0, 50000),
                     'settled_at' => $settledAt,
-                    'raw_data' => ['seeded' => true],
+                    'raw_data' => ['demo' => true, 'seeded' => true],
                 ]);
             }
         }

@@ -13,6 +13,21 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: laravel
+          POSTGRES_USER: sail
+          POSTGRES_PASSWORD: password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -23,6 +38,7 @@ jobs:
         uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # v2
         with:
           php-version: '8.4'
+          extensions: pdo_pgsql, pgsql, bcmath
           tools: composer:v2
           coverage: none
 
@@ -30,6 +46,21 @@ jobs:
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: '22'
+
+      # .env.example points DB_HOST at the compose service name, which does not
+      # exist on a runner. Written before `composer setup`, which only copies
+      # the example when no .env is present.
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+
+      # phpunit.xml runs against its own database so a test run cannot wipe
+      # the app's. The service container only creates one, so make the second.
+      - name: Create test database
+        env:
+          PGPASSWORD: password
+        run: psql -h 127.0.0.1 -U sail -d laravel -c 'CREATE DATABASE testing'
 
       - name: Setup Application
         run: composer setup
