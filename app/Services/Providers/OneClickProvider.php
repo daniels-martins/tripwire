@@ -130,7 +130,7 @@ class OneClickProvider implements QuoteProvider
 
         foreach ([$token.'USDC', $token.'USDT'] as $symbol) {
             try {
-                $response = Http::get('https://api.binance.com/api/v3/ticker/price', [
+                $response = Http::get(config('reference.base_url').'/api/v3/ticker/price', [
                     'symbol' => $symbol,
                 ]);
 

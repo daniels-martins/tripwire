@@ -102,7 +102,7 @@ abstract class AbstractComparatorProvider implements QuoteProvider
             foreach ([$asset.'USDC', $asset.'USDT'] as $symbol) {
                 try {
                     $response = Http::timeout(10)
-                        ->get('https://api.binance.com/api/v3/ticker/price', ['symbol' => $symbol]);
+                        ->get(config('reference.base_url').'/api/v3/ticker/price', ['symbol' => $symbol]);
 
                     if ($response->successful()) {
                         $price = (float) $response->json('price');
