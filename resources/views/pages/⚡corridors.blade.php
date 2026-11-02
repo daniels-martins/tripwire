@@ -12,10 +12,6 @@ new #[Layout('layouts.public')] #[Title('Corridors')] class extends Component
     #[Url]
     public string $size = 'medium';
 
-    public const PROVIDER_SLOTS = ['one-click' => 1];
-
-    public const PROVIDER_LABELS = ['one-click' => '1-Click (NEAR Intents)'];
-
     #[Computed]
     public function corridorLabels(): array
     {
@@ -107,8 +103,8 @@ new #[Layout('layouts.public')] #[Title('Corridors')] class extends Component
 
                         <div class="mt-2.5 flex items-center gap-2 text-sm">
                             <span class="size-2.5 shrink-0 rounded-full"
-                                  style="background-color: var(--color-series-{{ self::PROVIDER_SLOTS[$card->provider] ?? 1 }})"></span>
-                            <span class="truncate">{{ self::PROVIDER_LABELS[$card->provider] ?? $card->provider }}</span>
+                                  style="background-color: var(--color-series-{{ config('providers.'.$card->provider.'.slot', 1) }})"></span>
+                            <span class="truncate">{{ config('providers.'.$card->provider.'.name', $card->provider) }}</span>
                         </div>
 
                         <dl class="mt-3 grid grid-cols-3 gap-2 border-t border-viz-grid/60 pt-3 text-xs">

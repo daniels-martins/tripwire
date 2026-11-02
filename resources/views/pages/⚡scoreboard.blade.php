@@ -14,14 +14,6 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
     #[Url]
     public string $size = 'medium';
 
-    public const PROVIDER_SLOTS = [
-        'one-click' => 1,
-    ];
-
-    public const PROVIDER_LABELS = [
-        'one-click' => '1-Click (NEAR Intents)',
-    ];
-
     public function updated(string $property): void
     {
         if (in_array($property, ['corridor', 'size'], true)) {
@@ -107,8 +99,8 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
             ->orderBy('p50')
             ->get()
             ->map(fn ($r) => [
-                'name' => self::PROVIDER_LABELS[$r->provider] ?? $r->provider,
-                'slot' => self::PROVIDER_SLOTS[$r->provider] ?? 1,
+                'name' => config('providers.'.$r->provider.'.name', $r->provider),
+                'slot' => config('providers.'.$r->provider.'.slot', 1),
                 'p50' => (int) $r->p50,
                 'p95' => (int) $r->p95,
             ])->all();
@@ -134,8 +126,14 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                     return {
                         ...vizBase(),
                         chart: { ...vizBase().chart, type: 'rangeBar', height: 60 + rows.length * 46 },
-                        series: [{ data: rows.map(r => ({ x: r.name, y: [r.p50, r.p95],
-                                   fillColor: vizToken('--color-series-' + r.slot) })) }],
+                        // A rangeBar whose ends are equal draws nothing, which happens
+                        // whenever a provider has few samples. Give it a visible floor
+                        // for drawing only; the tooltip still reports the true figures.
+                        series: [{ data: rows.map(r => ({
+                            x: r.name,
+                            y: [r.p50, Math.max(r.p95, r.p50 + Math.max(1, r.p50 * 0.02))],
+                            fillColor: vizToken('--color-series-' + r.slot),
+                        })) }],
                         plotOptions: { bar: { horizontal: true, barHeight: '45%', borderRadius: 4 } },
                         stroke: { width: 0 },
                         xaxis: { title: { text: 'Latency (ms)', style: { fontWeight: 500, fontSize: '12px' } } },
@@ -213,8 +211,8 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                             <td class="px-4 py-2.5">
                                 <div class="flex items-center gap-2.5">
                                     <span class="size-2.5 shrink-0 rounded-full"
-                                          style="background-color: var(--color-series-{{ self::PROVIDER_SLOTS[$row->provider] ?? 1 }})"></span>
-                                    <span class="font-medium">{{ self::PROVIDER_LABELS[$row->provider] ?? $row->provider }}</span>
+                                          style="background-color: var(--color-series-{{ config('providers.'.$row->provider.'.slot', 1) }})"></span>
+                                    <span class="font-medium">{{ config('providers.'.$row->provider.'.name', $row->provider) }}</span>
                                     @if ($i === 0)
                                         <span class="inline-flex items-center gap-1 rounded-full bg-status-good/15 px-2 py-0.5 text-[11px] font-medium text-status-good">
                                             <svg class="size-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">

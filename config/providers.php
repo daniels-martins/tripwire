@@ -1,10 +1,20 @@
 <?php
 
+use App\Services\Providers\LiFiProvider;
 use App\Services\Providers\OneClickProvider;
 
 return [
+    'lifi' => [
+        'name' => 'LiFi',
+        'slot' => 2,
+        'class' => LiFiProvider::class,
+        'enabled' => env('LIFI_ENABLED', true),
+        'base_url' => 'https://li.quest',
+    ],
+
     'one-click' => [
         'name' => 'NEAR 1-Click',
+        'slot' => 1,
         'class' => OneClickProvider::class,
         'enabled' => true,
         'base_url' => 'https://1click.chaindefuser.com',

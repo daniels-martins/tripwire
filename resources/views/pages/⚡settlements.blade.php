@@ -12,8 +12,6 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
     #[Url]
     public string $corridor = '';
 
-    public const PROVIDER_LABELS = ['one-click' => '1-Click (NEAR Intents)'];
-
     #[Computed]
     public function corridorLabels(): array
     {

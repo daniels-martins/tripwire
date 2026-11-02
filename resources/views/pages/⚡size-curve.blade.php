@@ -12,10 +12,6 @@ new #[Layout('layouts.public')] #[Title('Size impact')] class extends Component
     #[Url]
     public string $corridor = '';
 
-    public const PROVIDER_SLOTS = ['one-click' => 1];
-
-    public const PROVIDER_LABELS = ['one-click' => '1-Click (NEAR Intents)'];
-
     public function mount(): void
     {
         if ($this->corridor === '') {
@@ -71,8 +67,8 @@ new #[Layout('layouts.public')] #[Title('Size impact')] class extends Component
                 $bySize = $points->keyBy('trade_size');
 
                 return [
-                    'name' => self::PROVIDER_LABELS[$provider] ?? $provider,
-                    'slot' => self::PROVIDER_SLOTS[$provider] ?? 1,
+                    'name' => config('providers.'.$provider.'.name', $provider),
+                    'slot' => config('providers.'.$provider.'.slot', 1),
                     // null keeps the category slot so bars stay aligned across providers
                     'data' => array_map(
                         fn ($size) => isset($bySize[$size]) ? round((float) $bySize[$size]->spread, 2) : null,

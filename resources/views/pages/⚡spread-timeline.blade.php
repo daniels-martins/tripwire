@@ -16,14 +16,6 @@ new #[Layout('layouts.public')] #[Title('Spread over time')] class extends Compo
     #[Url]
     public string $size = 'medium';
 
-    public const PROVIDER_SLOTS = [
-        'one-click' => 1,
-    ];
-
-    public const PROVIDER_LABELS = [
-        'one-click' => '1-Click (NEAR Intents)',
-    ];
-
     public function mount(): void
     {
         if ($this->corridor === '') {
@@ -92,8 +84,8 @@ new #[Layout('layouts.public')] #[Title('Spread over time')] class extends Compo
             ->get()
             ->groupBy('provider')
             ->map(fn ($points, $provider) => [
-                'name' => self::PROVIDER_LABELS[$provider] ?? $provider,
-                'slot' => self::PROVIDER_SLOTS[$provider] ?? 1,
+                'name' => config('providers.'.$provider.'.name', $provider),
+                'slot' => config('providers.'.$provider.'.slot', 1),
                 'data' => $points->map(fn ($r) => [
                     'x' => Carbon::parse($r->bucket)->valueOf(),
                     'y' => round((float) $r->spread, 2),
