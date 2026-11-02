@@ -13,44 +13,44 @@ class ReferencePriceFetcher
      */
     public function fetchForCorridor(string $corridorKey, array $corridorConfig): ?float
     {
-        $symbol = $corridorConfig['binance_symbol'];
-        $invert = $corridorConfig['binance_invert'] ?? false;
+        $from = $corridorConfig['from'];
+        $to = $corridorConfig['to'];
 
         try {
-            $response = Http::get('https://api.binance.com/api/v3/ticker/price', [
-                'symbol' => $symbol,
-            ]);
+            // Always derive from the USD legs rather than a direct cross symbol.
+            // Cross pairs are thin on secondary venues: binance.us quoted SOLETH
+            // at 0.0680 while SOLUSDT/ETHUSDT gave 0.0412, a 65% error that read
+            // as a 3,992 bps spread. The USD legs are the liquid ones.
+            $fromUsd = $this->usdPrice($from);
+            $toUsd = $this->usdPrice($to);
 
-            if (! $response->successful()) {
-                Log::warning('Binance price fetch failed', [
-                    'symbol' => $symbol,
-                    'status' => $response->status(),
+            if (! $fromUsd || ! $toUsd || $toUsd <= 0) {
+                Log::warning('Reference price unavailable', [
+                    'corridor' => $corridorKey,
+                    'from' => $from,
+                    'to' => $to,
                 ]);
 
                 return null;
             }
 
-            $price = (float) $response->json('price');
+            $price = $fromUsd / $toUsd;
 
             if ($price <= 0) {
                 return null;
             }
 
-            if ($invert) {
-                $price = 1 / $price;
-            }
-
             ReferencePrice::create([
                 'pair' => $corridorKey,
                 'price' => $price,
-                'source' => 'binance',
+                'source' => 'derived',
                 'fetched_at' => now(),
             ]);
 
             return $price;
         } catch (\Throwable $e) {
-            Log::error('Binance price exception', [
-                'symbol' => $symbol,
+            Log::error('Reference price exception', [
+                'corridor' => $corridorKey,
                 'error' => $e->getMessage(),
             ]);
 
@@ -58,33 +58,25 @@ class ReferencePriceFetcher
         }
     }
 
-    public function getLatestPrice(string $corridorKey): ?float
+    /** Price of one unit of $asset in USD. Stablecoins are taken as 1. */
+    public function usdPrice(string $asset): ?float
     {
-        $latest = ReferencePrice::where('pair', $corridorKey)
-            ->latest('fetched_at')
-            ->first();
+        if (in_array($asset, ['USDC', 'USDT', 'USD'], true)) {
+            return 1.0;
+        }
 
-        return $latest?->price ? (float) $latest->price : null;
-    }
+        foreach ((array) config('reference.quote_fallbacks', ['USDT']) as $quote) {
+            $response = Http::timeout(15)->get(
+                config('reference.base_url').'/api/v3/ticker/price',
+                ['symbol' => $asset.$quote]
+            );
 
-    public function fetchOriginPriceUsd(string $tokenSymbol): ?float
-    {
-        $symbols = [$tokenSymbol.'USDC', $tokenSymbol.'USDT'];
+            if ($response->successful()) {
+                $price = (float) $response->json('price');
 
-        foreach ($symbols as $symbol) {
-            try {
-                $response = Http::get('https://api.binance.com/api/v3/ticker/price', [
-                    'symbol' => $symbol,
-                ]);
-
-                if ($response->successful()) {
-                    $price = (float) $response->json('price');
-                    if ($price > 0) {
-                        return $price;
-                    }
+                if ($price > 0) {
+                    return $price;
                 }
-            } catch (\Throwable) {
-                continue;
             }
         }
 
