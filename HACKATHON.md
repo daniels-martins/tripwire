@@ -12,14 +12,18 @@ The scanner feeds an investment thesis report on NEAR, complete with tripwires â
 ## Quick Start (Zero API Keys Required)
 
 ```bash
-git clone <repo-url> tripwire
+git clone https://github.com/daniels-martins/tripwire.git
 cd tripwire
 cp .env.example .env
+
+# vendor/ is not committed, so Sail does not exist yet. This installs it
+# without needing PHP or Composer on your machine.
+docker run --rm -v "$(pwd)":/app -w /app composer:2 install --ignore-platform-reqs
+
 ./vendor/bin/sail up -d
-./vendor/bin/sail shell
-npm install && npm run build
-bash docker/entrypoint.sh
-exit
+./vendor/bin/sail npm install
+./vendor/bin/sail npm run build
+./vendor/bin/sail bash docker/entrypoint.sh
 ```
 
 Then open [http://localhost](http://localhost) in your browser.
