@@ -164,7 +164,7 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
 <div class="min-h-screen bg-viz-plane text-viz-ink">
     <div class="mx-auto max-w-5xl px-6 py-10">
 
-        <header class="mb-8 flex items-start justify-between gap-4">
+        <header class="mb-8">
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Tripwire</h1>
                 <p class="mt-1 text-sm text-viz-ink-soft">
@@ -172,11 +172,6 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                     the CEX reference mid, not advertised.
                 </p>
             </div>
-            <flux:radio.group x-data variant="segmented" size="sm" x-model="$flux.appearance">
-                <flux:radio value="light" icon="sun" />
-                <flux:radio value="dark" icon="moon" />
-                <flux:radio value="system" icon="computer-desktop" />
-            </flux:radio.group>
         </header>
 
         <div class="mb-4 flex flex-wrap items-end gap-3">
@@ -203,7 +198,7 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
             <div wire:loading class="pb-2 text-xs text-viz-ink-muted">Updating…</div>
         </div>
 
-        <div class="overflow-hidden rounded-xl border border-viz-grid bg-viz-surface">
+        <div class="overflow-x-auto rounded-xl border border-viz-grid bg-viz-surface">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-viz-grid text-left text-xs text-viz-ink-muted">

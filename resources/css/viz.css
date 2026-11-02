@@ -101,3 +101,6 @@
            border-bottom: 1px solid var(--color-viz-grid); padding: 0.5rem 0.75rem; }
 .memo td { border-bottom: 1px solid var(--color-viz-grid); padding: 0.5rem 0.75rem; }
 .memo tr:last-child td { border-bottom: 0; }
+
+/* Markdown tables get no wrapper of their own, so the thesis page adds one. */
+.memo-scroll { overflow-x: auto; }
