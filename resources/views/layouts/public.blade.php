@@ -7,6 +7,7 @@
     <body class="min-h-screen antialiased">
         @include('partials.nav')
         {{ $slot }}
+        @include('partials.footer')
         @fluxScripts
         @stack('scripts')
     </body>

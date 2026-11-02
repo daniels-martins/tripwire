@@ -14,14 +14,6 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
     #[Url]
     public string $size = 'medium';
 
-    public const PROVIDER_SLOTS = [
-        'one-click' => 1,
-    ];
-
-    public const PROVIDER_LABELS = [
-        'one-click' => '1-Click (NEAR Intents)',
-    ];
-
     public function updated(string $property): void
     {
         if (in_array($property, ['corridor', 'size'], true)) {
@@ -107,11 +99,33 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
             ->orderBy('p50')
             ->get()
             ->map(fn ($r) => [
-                'name' => self::PROVIDER_LABELS[$r->provider] ?? $r->provider,
-                'slot' => self::PROVIDER_SLOTS[$r->provider] ?? 1,
+                'name' => config('providers.'.$r->provider.'.name', $r->provider),
+                'slot' => config('providers.'.$r->provider.'.slot', 1),
                 'p50' => (int) $r->p50,
                 'p95' => (int) $r->p95,
             ])->all();
+    }
+
+    /**
+     * The finding, as three numbers: who wins, by how much, and how much of
+     * the field was actually in the race.
+     */
+    #[Computed]
+    public function headline(): object
+    {
+        $rows = $this->rows;
+        $best = $rows[0] ?? null;
+        $next = $rows[1] ?? null;
+
+        return (object) [
+            'best' => $best ? config('providers.'.$best->provider.'.name', $best->provider) : null,
+            'best_bps' => $best?->median_spread_bps,
+            'edge_bps' => $best && $next
+                ? round((float) $next->median_spread_bps - (float) $best->median_spread_bps, 1)
+                : null,
+            'routes' => count($rows),
+            'samples' => array_sum(array_map(fn ($r) => (int) $r->sample_count, $rows)),
+        ];
     }
 
     #[Computed]
@@ -134,11 +148,21 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                     return {
                         ...vizBase(),
                         chart: { ...vizBase().chart, type: 'rangeBar', height: 60 + rows.length * 46 },
-                        series: [{ data: rows.map(r => ({ x: r.name, y: [r.p50, r.p95],
-                                   fillColor: vizToken('--color-series-' + r.slot) })) }],
+                        // A rangeBar whose ends are equal draws nothing, which happens
+                        // whenever a provider has few samples. Give it a visible floor
+                        // for drawing only; the tooltip still reports the true figures.
+                        series: [{ data: rows.map(r => ({
+                            x: r.name,
+                            y: [r.p50, Math.max(r.p95, r.p50 + Math.max(1, r.p50 * 0.02))],
+                            fillColor: vizToken('--color-series-' + r.slot),
+                        })) }],
                         plotOptions: { bar: { horizontal: true, barHeight: '45%', borderRadius: 4 } },
                         stroke: { width: 0 },
-                        xaxis: { title: { text: 'Latency (ms)', style: { fontWeight: 500, fontSize: '12px' } } },
+                        xaxis: {
+                            title: { text: 'Latency (ms)', style: { fontWeight: 500, fontSize: '12px' } },
+                            tickAmount: window.innerWidth < 640 ? 3 : 6,
+                            labels: { formatter: v => Math.round(v).toLocaleString() },
+                        },
                         tooltip: { ...vizBase().tooltip, custom: ({ dataPointIndex }) => {
                             const r = rows[dataPointIndex];
                             return '<div style="padding:6px 10px">' + r.name +
@@ -198,6 +222,38 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
             <div wire:loading class="pb-2 text-xs text-viz-ink-muted">Updating…</div>
         </div>
 
+        @if ($this->headline->best)
+            <div class="mb-4 grid gap-px overflow-hidden rounded-xl border border-viz-grid bg-viz-grid sm:grid-cols-3">
+                <div class="bg-viz-surface px-4 py-3.5">
+                    <p class="stat-label">Cheapest route</p>
+                    <p class="stat-value mt-1.5 flex items-baseline gap-2">
+                        <span class="inline-block size-2.5 shrink-0 rounded-full"
+                              style="background-color: var(--color-series-{{ config('providers.'.$this->rows[0]->provider.'.slot', 1) }})"></span>
+                        <span class="truncate">{{ $this->headline->best }}</span>
+                    </p>
+                </div>
+                <div class="bg-viz-surface px-4 py-3.5">
+                    <p class="stat-label">Its spread</p>
+                    <p class="stat-value mt-1.5">
+                        {{ number_format($this->headline->best_bps, 1) }}
+                        <span class="text-sm font-normal text-viz-ink-muted">bps</span>
+                    </p>
+                </div>
+                <div class="bg-viz-surface px-4 py-3.5">
+                    <p class="stat-label">{{ $this->headline->edge_bps !== null ? 'Edge over next' : 'Routes quoting' }}</p>
+                    <p class="stat-value mt-1.5">
+                        @if ($this->headline->edge_bps !== null)
+                            {{ number_format($this->headline->edge_bps, 1) }}
+                            <span class="text-sm font-normal text-viz-ink-muted">bps better</span>
+                        @else
+                            {{ $this->headline->routes }}
+                            <span class="text-sm font-normal text-viz-ink-muted">of {{ count(array_filter(config('providers'), fn ($p) => $p['enabled'] ?? false)) }}</span>
+                        @endif
+                    </p>
+                </div>
+            </div>
+        @endif
+
         <div class="overflow-x-auto rounded-xl border border-viz-grid bg-viz-surface">
             <table class="w-full text-sm">
                 <thead>
@@ -211,10 +267,10 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                     @forelse ($this->rows as $i => $row)
                         <tr wire:key="row-{{ $row->provider }}" class="border-b border-viz-grid/60 last:border-0">
                             <td class="px-4 py-2.5">
-                                <div class="flex items-center gap-2.5">
+                                <div class="flex items-center gap-2.5 whitespace-nowrap">
                                     <span class="size-2.5 shrink-0 rounded-full"
-                                          style="background-color: var(--color-series-{{ self::PROVIDER_SLOTS[$row->provider] ?? 1 }})"></span>
-                                    <span class="font-medium">{{ self::PROVIDER_LABELS[$row->provider] ?? $row->provider }}</span>
+                                          style="background-color: var(--color-series-{{ config('providers.'.$row->provider.'.slot', 1) }})"></span>
+                                    <span class="font-medium">{{ config('providers.'.$row->provider.'.name', $row->provider) }}</span>
                                     @if ($i === 0)
                                         <span class="inline-flex items-center gap-1 rounded-full bg-status-good/15 px-2 py-0.5 text-[11px] font-medium text-status-good">
                                             <svg class="size-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">

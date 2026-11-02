@@ -13,8 +13,6 @@ new #[Layout('layouts.public')] #[Title('Reliability')] class extends Component
     #[Url]
     public string $size = '';
 
-    public const PROVIDER_LABELS = ['one-click' => '1-Click (NEAR Intents)'];
-
     #[Computed]
     public function corridorLabels(): array
     {
@@ -143,7 +141,7 @@ new #[Layout('layouts.public')] #[Title('Reliability')] class extends Component
                     @forelse ($this->providers as $provider)
                         <tr wire:key="prov-{{ $provider }}">
                             <td class="sticky left-0 bg-viz-surface px-4 py-2 text-left font-medium whitespace-nowrap">
-                                {{ self::PROVIDER_LABELS[$provider] ?? $provider }}
+                                {{ config('providers.'.$provider.'.name', $provider) }}
                             </td>
                             @foreach ($this->corridors as $c)
                                 @php($cell = $this->grid[$provider][$c] ?? null)
