@@ -159,7 +159,7 @@ new #[Layout('layouts.public')] #[Title('Size impact')] class extends Component
         </div>
 
         <p class="mt-3 text-xs text-viz-ink-muted">
-            Median spread in basis points vs. the Binance spot mid. A gap means that route returned
+            Median spread in basis points against a reference rate derived from spot USD pairs. A gap means that route returned
             no successful quote at that size.
         </p>
     </div>

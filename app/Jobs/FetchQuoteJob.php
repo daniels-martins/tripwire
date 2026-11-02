@@ -65,7 +65,7 @@ class FetchQuoteJob implements ShouldQueue
                 'spread_bps' => 0,
                 'latency_ms' => $latencyMs,
                 'ok' => false,
-                'error' => 'No quote returned',
+                'error' => $provider->failureReason() ?? 'No quote returned',
                 'quoted_at' => now(),
             ]);
 

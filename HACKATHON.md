@@ -5,7 +5,7 @@
 
 ## What This Is
 
-A price comparison scanner for crypto bridges — like Skyscanner, but for moving crypto between chains. It polls bridge quotes every 5 minutes across 8 trading corridors, compares them against real Binance spot prices, and checks the receipts by pulling actual on-chain settlement data from NEAR's `intents.near` contract.
+A price comparison scanner for crypto bridges — like Skyscanner, but for moving crypto between chains. It polls bridge quotes every 15 minutes across 8 trading corridors, compares them against reference rates derived from spot USD pairs on a centralised exchange, and checks the receipts by pulling actual on-chain settlement data from NEAR's `intents.near` contract.
 
 The scanner feeds an investment thesis report on NEAR, complete with tripwires — falsifiable claims that re-evaluate themselves on every run. If a tripwire trips, the thesis needs revision.
 
@@ -84,7 +84,7 @@ One Laravel app. Livewire dashboard, materialized SQL views, public JSON API. Th
 
 ### Data Pipeline
 
-1. **Quote Poller** (`quotes:poll`) — every 5 min, dispatches one job per corridor × size × provider. Each job: fetch dry-run quote → fetch Binance spot price → compute spread in bps → store row.
+1. **Quote Poller** (`quotes:poll`) — every 15 min, dispatches one job per corridor × size × provider. Each job: fetch dry-run quote → derive the reference rate from each asset's spot USD pair → compute spread in bps → store row.
 2. **Settlement Ingester** (`settlements:ingest`) — pulls `ft_on_transfer` receipts from `intents.near` via NearBlocks API, maps token contracts to corridors, normalizes amounts.
 3. **Materialized Views** (`views:refresh`) — five views aggregate raw data into leaderboard, spread series, size curve, settlement accuracy, and corridor coverage.
 4. **Memo Generator** (`memo:generate`) — evaluates tripwires, gathers all metrics, writes `results.json` + investment memo from template.

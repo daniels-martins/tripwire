@@ -67,8 +67,8 @@ The tripwire panel above evaluates these conditions on every run. A tripped wire
 
 ## Methodology
 
-- Quotes are fetched every 5 minutes via dry-run API calls to each bridge provider, asking "how much destination token do I receive for X USD worth of origin token?"
-- Each quote is compared against the Binance spot price at the same moment. The spread in basis points measures how much worse the bridge quote is versus fair market.
+- Quotes are fetched every 15 minutes via dry-run API calls to each bridge provider, asking "how much destination token do I receive for X USD worth of origin token?"
+- Each quote is compared against a reference rate derived from each asset's spot USD pair at the same moment. The spread in basis points measures how much worse the bridge quote is versus fair market.
 - Settlement data is ingested from the NEAR blockchain by monitoring `ft_on_transfer` calls to the `intents.near` contract.
 - All figures regenerate from live data on each run of `php artisan memo:generate`.
 

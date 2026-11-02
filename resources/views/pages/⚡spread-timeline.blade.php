@@ -147,7 +147,7 @@ new #[Layout('layouts.public')] #[Title('Spread over time')] class extends Compo
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Spread over time</h1>
                 <p class="mt-1 text-sm text-viz-ink-soft">
-                    Median quoted spread against the Binance mid, bucketed over the polling run.
+                    Median quoted spread against the reference rate, bucketed over the polling run.
                     Lower is better.
                 </p>
             </div>

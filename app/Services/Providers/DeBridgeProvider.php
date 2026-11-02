@@ -52,13 +52,13 @@ class DeBridgeProvider extends AbstractComparatorProvider
                 ]);
 
             if (! $response->successful()) {
-                return null;
+                return $this->fail('Upstream HTTP '.$response->status());
             }
 
             $out = $response->json('estimation.dstChainTokenOut.amount');
 
             if (! $out) {
-                return null;
+                return $this->fail('No amount in response');
             }
 
             $formatted = $this->fromBaseUnits((string) $out, $map['to_decimals']);
@@ -78,7 +78,7 @@ class DeBridgeProvider extends AbstractComparatorProvider
         } catch (\Throwable $e) {
             Log::error('deBridge quote exception', ['corridor' => $corridorKey, 'error' => $e->getMessage()]);
 
-            return null;
+            return $this->fail('Request failed ('.class_basename($e).')');
         }
     }
 }
