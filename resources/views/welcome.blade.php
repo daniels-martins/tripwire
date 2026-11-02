@@ -6,9 +6,10 @@
 
         <title>{{ __('Welcome') }} - {{ config('app.name', 'Laravel') }}</title>
 
-        <link rel="icon" href="/favicon.ico" sizes="any">
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+        @php($iconVersion = @filemtime(public_path('favicon.ico')) ?: 1)
+        <link rel="icon" href="/favicon.ico?v={{ $iconVersion }}" sizes="any">
+        <link rel="icon" href="/favicon.svg?v={{ $iconVersion }}" type="image/svg+xml">
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png?v={{ $iconVersion }}">
 
         @fonts
 
