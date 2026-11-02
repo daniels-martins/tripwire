@@ -36,6 +36,17 @@ return [
             'from' => ['chain' => 'solana', 'asset' => 'SOL', 'decimals' => 9],
             'to' => ['chain' => 'ethereum', 'asset' => 'ETH', 'decimals' => 18],
         ],
+
+        /*
+         * Bitcoin as a DESTINATION only. Relay refuses to quote a Bitcoin
+         * origin without a funded address ("No UTXOs available to spend"),
+         * and a dry quote has no wallet behind it. So BTC_USDC and BTC_ETH
+         * stay NEAR-only, while ETH_BTC is comparable.
+         */
+        'ETH_BTC' => [
+            'from' => ['chain' => 'ethereum', 'asset' => 'ETH', 'decimals' => 18],
+            'to' => ['chain' => 'bitcoin', 'asset' => 'BTC', 'decimals' => 8],
+        ],
     ],
 
     'tokens' => [
@@ -51,6 +62,10 @@ return [
             'SOL' => '11111111111111111111111111111111',
             'USDC' => 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
         ],
+        'bitcoin' => [
+            // Relay's own identifier for native BTC, from its /chains response.
+            'BTC' => 'bc1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqmql8k8',
+        ],
     ],
 
     /*
@@ -58,12 +73,14 @@ return [
      */
     'chain_ids' => [
         'lifi' => ['ethereum' => 1, 'base' => 8453, 'solana' => 1151111081099710],
-        'relay' => ['ethereum' => 1, 'base' => 8453, 'solana' => 792703809],
+        'relay' => ['ethereum' => 1, 'base' => 8453, 'solana' => 792703809, 'bitcoin' => 8253038],
         'debridge' => ['ethereum' => 1, 'base' => 8453, 'solana' => 7565164],
     ],
 
     'placeholder_address' => [
         'evm' => '0x000000000000000000000000000000000000dEaD',
         'solana' => 'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',
+        // BIP173 reference address. Only ever a quote recipient, never funded.
+        'bitcoin' => 'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4',
     ],
 ];

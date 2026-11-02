@@ -60,7 +60,9 @@ abstract class AbstractComparatorProvider implements QuoteProvider
 
     protected function placeholder(string $chain): string
     {
-        return config('comparators.placeholder_address.'.($chain === 'solana' ? 'solana' : 'evm'));
+        return config('comparators.placeholder_address.'.(
+            in_array($chain, ['solana', 'bitcoin'], true) ? $chain : 'evm'
+        ));
     }
 
     protected function baseUnits(float $sizeUsd, string $fromAsset, int $decimals): ?string
