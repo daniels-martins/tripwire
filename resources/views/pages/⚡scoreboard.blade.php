@@ -106,6 +106,28 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
             ])->all();
     }
 
+    /**
+     * The finding, as three numbers: who wins, by how much, and how much of
+     * the field was actually in the race.
+     */
+    #[Computed]
+    public function headline(): object
+    {
+        $rows = $this->rows;
+        $best = $rows[0] ?? null;
+        $next = $rows[1] ?? null;
+
+        return (object) [
+            'best' => $best ? config('providers.'.$best->provider.'.name', $best->provider) : null,
+            'best_bps' => $best?->median_spread_bps,
+            'edge_bps' => $best && $next
+                ? round((float) $next->median_spread_bps - (float) $best->median_spread_bps, 1)
+                : null,
+            'routes' => count($rows),
+            'samples' => array_sum(array_map(fn ($r) => (int) $r->sample_count, $rows)),
+        ];
+    }
+
     #[Computed]
     public function meta(): object
     {
@@ -195,6 +217,38 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
 
             <div wire:loading class="pb-2 text-xs text-viz-ink-muted">Updating…</div>
         </div>
+
+        @if ($this->headline->best)
+            <div class="mb-4 grid gap-px overflow-hidden rounded-xl border border-viz-grid bg-viz-grid sm:grid-cols-3">
+                <div class="bg-viz-surface px-4 py-3.5">
+                    <p class="stat-label">Cheapest route</p>
+                    <p class="stat-value mt-1.5 flex items-baseline gap-2">
+                        <span class="inline-block size-2.5 shrink-0 rounded-full"
+                              style="background-color: var(--color-series-{{ config('providers.'.$this->rows[0]->provider.'.slot', 1) }})"></span>
+                        <span class="truncate">{{ $this->headline->best }}</span>
+                    </p>
+                </div>
+                <div class="bg-viz-surface px-4 py-3.5">
+                    <p class="stat-label">Its spread</p>
+                    <p class="stat-value mt-1.5">
+                        {{ number_format($this->headline->best_bps, 1) }}
+                        <span class="text-sm font-normal text-viz-ink-muted">bps</span>
+                    </p>
+                </div>
+                <div class="bg-viz-surface px-4 py-3.5">
+                    <p class="stat-label">{{ $this->headline->edge_bps !== null ? 'Edge over next' : 'Routes quoting' }}</p>
+                    <p class="stat-value mt-1.5">
+                        @if ($this->headline->edge_bps !== null)
+                            {{ number_format($this->headline->edge_bps, 1) }}
+                            <span class="text-sm font-normal text-viz-ink-muted">bps better</span>
+                        @else
+                            {{ $this->headline->routes }}
+                            <span class="text-sm font-normal text-viz-ink-muted">of {{ count(array_filter(config('providers'), fn ($p) => $p['enabled'] ?? false)) }}</span>
+                        @endif
+                    </p>
+                </div>
+            </div>
+        @endif
 
         <div class="overflow-x-auto rounded-xl border border-viz-grid bg-viz-surface">
             <table class="w-full text-sm">

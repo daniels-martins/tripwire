@@ -104,3 +104,62 @@
 
 /* Markdown tables get no wrapper of their own, so the thesis page adds one. */
 .memo-scroll { overflow-x: auto; }
+
+/* --- UI pass -------------------------------------------------------------
+   Applied globally so every page moves together, rather than seven separate
+   sets of utility classes drifting apart. The memo opts out: it is prose. */
+
+/* Data tables: quiet headers, scannable rows. */
+table thead th {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+    color: var(--color-viz-ink-muted);
+}
+tbody tr { transition: background-color 120ms ease; }
+tbody tr:hover { background-color: color-mix(in oklab, var(--color-viz-grid) 50%, transparent); }
+
+.memo table thead th {
+    font-size: 0.75rem;
+    letter-spacing: normal;
+    text-transform: none;
+}
+.memo tbody tr:hover { background-color: transparent; }
+
+/* Headings: tighter tracking reads as deliberate at large sizes. */
+h1 { letter-spacing: -0.021em; }
+h2, h3 { letter-spacing: -0.012em; }
+
+/* Numbers that carry the finding should feel settled, not cramped. */
+.stat-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+}
+.stat-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+    color: var(--color-viz-ink-muted);
+}
+
+/* Links in body copy. */
+a:not([class]) { text-decoration: underline; text-underline-offset: 2px; }
+
+/* Native selects inherit the surface rather than the OS. */
+select {
+    appearance: none;
+    background-image: linear-gradient(45deg, transparent 50%, var(--color-viz-ink-muted) 50%),
+                      linear-gradient(135deg, var(--color-viz-ink-muted) 50%, transparent 50%);
+    background-position: calc(100% - 15px) calc(50% + 1px), calc(100% - 10px) calc(50% + 1px);
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+    padding-right: 2rem;
+}
+select:focus-visible {
+    outline: 2px solid var(--color-series-1);
+    outline-offset: 1px;
+}
