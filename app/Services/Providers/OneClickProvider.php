@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Log;
 
 class OneClickProvider implements QuoteProvider
 {
+    use ReportsFailureReason;
+
     public function name(): string
     {
         return 'one-click';
@@ -26,7 +28,7 @@ class OneClickProvider implements QuoteProvider
         try {
             $amount = $this->computeBaseAmount($sizeUsd, $corridorConfig);
             if (! $amount) {
-                return null;
+                return $this->fail('Reference price unavailable');
             }
 
             $refundAddress = $this->getPlaceholderAddress($corridorConfig['refund_type'], $corridorConfig['from']);
@@ -66,7 +68,7 @@ class OneClickProvider implements QuoteProvider
                     'body' => $response->body(),
                 ]);
 
-                return null;
+                return $this->fail('Upstream HTTP '.$response->status());
             }
 
             $data = $response->json();
@@ -74,7 +76,7 @@ class OneClickProvider implements QuoteProvider
             $amountOutFormatted = $data['quote']['amountOutFormatted'] ?? null;
 
             if (! $amountOut) {
-                return null;
+                return $this->fail('No amount in response');
             }
 
             return new QuoteResult(
@@ -92,7 +94,7 @@ class OneClickProvider implements QuoteProvider
                 'error' => $e->getMessage(),
             ]);
 
-            return null;
+            return $this->fail('Request failed ('.class_basename($e).')');
         }
     }
 

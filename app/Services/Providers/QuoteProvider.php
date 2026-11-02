@@ -13,5 +13,11 @@ interface QuoteProvider
 
     public function name(): string;
 
+    /**
+     * Why the last getQuote() returned null. Only meaningful directly
+     * after a null return.
+     */
+    public function failureReason(): ?string;
+
     public function isEnabled(): bool;
 }

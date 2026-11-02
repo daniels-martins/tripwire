@@ -53,13 +53,13 @@ class RelayProvider extends AbstractComparatorProvider
                 ]);
 
             if (! $response->successful()) {
-                return null;
+                return $this->fail('Upstream HTTP '.$response->status());
             }
 
             $formatted = $response->json('details.currencyOut.amountFormatted');
 
             if (! $formatted || (float) $formatted <= 0) {
-                return null;
+                return $this->fail('No amount in response');
             }
 
             return new QuoteResult(
@@ -78,7 +78,7 @@ class RelayProvider extends AbstractComparatorProvider
         } catch (\Throwable $e) {
             Log::error('Relay quote exception', ['corridor' => $corridorKey, 'error' => $e->getMessage()]);
 
-            return null;
+            return $this->fail('Request failed ('.class_basename($e).')');
         }
     }
 }

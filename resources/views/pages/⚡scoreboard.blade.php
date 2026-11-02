@@ -311,7 +311,7 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
         @endif
 
         <p class="mt-3 text-xs text-viz-ink-muted">
-            Lower spread is better. Spread is measured in basis points vs. the Binance spot mid-price.
+            Lower spread is better. Spread is measured in basis points against a reference rate derived from spot USD pairs.
             @if ($this->meta->as_of)
                 As of {{ \Illuminate\Support\Carbon::parse($this->meta->as_of)->diffForHumans() }},
                 {{ number_format($this->meta->ok_count) }}/{{ number_format($this->meta->n) }} successful quotes.

@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Http;
  */
 abstract class AbstractComparatorProvider implements QuoteProvider
 {
+    use ReportsFailureReason;
+
     /** Key under comparators.chain_ids for this provider. */
     abstract protected function chainKey(): string;
 
@@ -27,7 +29,7 @@ abstract class AbstractComparatorProvider implements QuoteProvider
         $map = config("comparators.corridors.{$corridorKey}");
 
         if (! $map) {
-            return null;
+            return $this->fail('Corridor not configured');
         }
 
         $ids = config('comparators.chain_ids.'.$this->chainKey(), []);
@@ -36,14 +38,14 @@ abstract class AbstractComparatorProvider implements QuoteProvider
 
         // A chain this provider does not number is a chain it does not serve.
         if ($fromChain === null || $toChain === null) {
-            return null;
+            return $this->fail('Chain not served by this provider');
         }
 
         $fromToken = config("comparators.tokens.{$map['from']['chain']}.{$map['from']['asset']}");
         $toToken = config("comparators.tokens.{$map['to']['chain']}.{$map['to']['asset']}");
 
         if (! $fromToken || ! $toToken) {
-            return null;
+            return $this->fail('Token not configured for this chain');
         }
 
         return [
@@ -70,7 +72,7 @@ abstract class AbstractComparatorProvider implements QuoteProvider
         $priceUsd = $this->originPriceUsd($fromAsset);
 
         if (! $priceUsd || $priceUsd <= 0) {
-            return null;
+            return $this->fail('Reference price unavailable');
         }
 
         return bcmul(
@@ -88,7 +90,7 @@ abstract class AbstractComparatorProvider implements QuoteProvider
     }
 
     /**
-     * The same Binance reference the rest of the scanner uses, so "$1,000"
+     * The same reference venue the rest of the scanner uses, so "$1,000"
      * means the same trade for every provider. Cached so one polling sweep
      * does not hit the ticker once per corridor per size per provider.
      */

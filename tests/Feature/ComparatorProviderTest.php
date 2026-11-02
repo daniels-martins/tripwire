@@ -51,3 +51,23 @@ test('base units convert back to a human amount', function () {
         ->and($method->invoke($provider, '1000000', 6))->toBe('1')
         ->and($method->invoke($provider, '0', 6))->toBe('0');
 });
+
+test('a declined corridor says why, so causes can be told apart', function () {
+    // The reliability page grouped every failure under one "No quote returned"
+    // label, which hid an upstream outage among corridors nobody maps.
+    $unconfigured = new LiFiProvider;
+    callMapping($unconfigured, 'NEAR_USDC');
+
+    $unserved = new LiFiProvider;
+    callMapping($unserved, 'ETH_BTC');
+
+    expect($unconfigured->failureReason())->toBe('Corridor not configured')
+        ->and($unserved->failureReason())->toBe('Chain not served by this provider');
+});
+
+test('a provider that has not declined anything reports no reason', function () {
+    $provider = new LiFiProvider;
+    callMapping($provider, 'ETH_USDC');
+
+    expect($provider->failureReason())->toBeNull();
+});
