@@ -6,6 +6,7 @@
     </head>
     <body class="min-h-screen antialiased">
         @include('partials.nav')
+        @include('partials.demo-banner')
         {{ $slot }}
         @include('partials.footer')
         @fluxScripts

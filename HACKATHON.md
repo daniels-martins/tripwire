@@ -24,15 +24,37 @@ exit
 
 Then open [http://localhost](http://localhost) in your browser.
 
-The setup script automatically migrates the database, seeds 7 days of realistic demo data (~12,000 quotes, ~140 settlements across 4 corridors), refreshes all materialized views, and generates the investment memo with tripwire evaluations.
+**The seeded data is fabricated.** It exists so a clean clone has something to show, and every
+page carries a banner saying so while it is present. For measured figures, run
+`php artisan migrate:fresh` then the poller below. The setup script migrates the database,
+seeds 7 days of demo data (~12,000 quotes, ~140 settlements across 4 corridors), refreshes all materialized views, and generates the investment memo with tripwire evaluations.
+
+## Routes compared
+
+| Route | Status | Notes |
+|-------|--------|-------|
+| NEAR 1-Click | live | Quotes all 8 corridors |
+| LiFi | live | Cross-chain aggregator; 3 corridors |
+| Relay | live | Adds Bitcoin as a destination; 4 corridors |
+| deBridge | live | Order-based liquidity network; 3 corridors |
+| Across | disabled | Moves the *same* asset between chains, so it cannot quote a cross-asset corridor |
+| Stargate | disabled | Quote API deprecated; successor endpoint 404s for these pairs |
+
+Four of the eight corridors are uncontested — BTC as a *source* cannot be dry-quoted without a
+funded wallet, and no comparator supports NEAR as a chain. On those, NEAR Intents is the only
+route that exists, which is itself part of the finding.
 
 ## Do X, See Y
 
 | Do | See |
 |----|-----|
-| Open `/` | Scoreboard — providers ranked by spread |
-| Open `/reliability` | Reliability heatmap and latency distribution |
-| Open `/settlements` | Settlement verification with on-chain tx links |
+| Open `/` | Scoreboard — routes ranked by median spread, with latency spread |
+| Open `/spread` | Median spread over time, one line per route |
+| Open `/size-curve` | How spread changes between $100, $1,000 and $10,000 |
+| Open `/corridors` | Best route per pair, and the pairs nobody quotes |
+| Open `/reliability` | Success-rate heatmap per route × corridor |
+| Open `/settlements` | Real swaps from `intents.near`, hashes linked to NearBlocks |
+| Open `/thesis` | The memo and five tripwires, HOLDING / TRIPPED / PENDING |
 | `GET /api/meta` | As-of timestamp, block heights, sample counts |
 | `GET /api/corridors` | All trading pairs, provider counts, success rates |
 | `GET /api/leaderboard?corridor=BTC_USDC&size=medium` | Providers ranked by median spread for BTC→USDC at $1,000 |
@@ -43,6 +65,8 @@ The setup script automatically migrates the database, seeds 7 days of realistic 
 | `./vendor/bin/sail artisan memo:generate` | Regenerates `results.json` and the investment memo |
 | `cat storage/app/memo/investment-memo.md` | The generated investment thesis with live data |
 | `cat storage/app/memo/results.json` | Every computation in one JSON file |
+| `php artisan quotes:poll` | Queues one job per corridor × size × route |
+| `php artisan queue:work --stop-when-empty` | **Required** — `quotes:poll` only queues; nothing lands without a worker |
 
 ## Architecture
 
