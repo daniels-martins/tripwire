@@ -9,4 +9,3 @@ Route::livewire('/corridors', 'pages::corridors')->name('corridors');
 Route::livewire('/reliability', 'pages::reliability')->name('reliability');
 Route::livewire('/settlements', 'pages::settlements')->name('settlements');
 Route::livewire('/thesis', 'pages::thesis')->name('thesis');
-Route::view('dashboard', 'dashboard')->name('dashboard');
