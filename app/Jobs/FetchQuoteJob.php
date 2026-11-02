@@ -107,7 +107,7 @@ class FetchQuoteJob implements ShouldQueue
         }
 
         $originToken = $this->corridorConfig['from'] ?? '';
-        $originPriceUsd = $priceFetcher->fetchOriginPriceUsd($originToken);
+        $originPriceUsd = $priceFetcher->usdPrice($originToken);
 
         if (! $originPriceUsd || $originPriceUsd <= 0) {
             return 0;
