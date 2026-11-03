@@ -24,8 +24,16 @@ class SecurityHeaders
         // Referrers leak the corridor and amount someone was looking at.
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
-        $response->headers->set('X-Frame-Options', 'SAMEORIGIN', false);
-        $response->headers->set('X-Content-Type-Options', 'nosniff', false);
+        // Nginx sends X-Frame-Options and X-Content-Type-Options already.
+        // Adding them here with replace=false emitted each one twice, so set
+        // them only if they are missing.
+        if (! $response->headers->has('X-Frame-Options')) {
+            $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+        }
+
+        if (! $response->headers->has('X-Content-Type-Options')) {
+            $response->headers->set('X-Content-Type-Options', 'nosniff');
+        }
 
         // Only over TLS, and not for the whole zone: this host is served
         // through Cloudflare, the siblings are other people's sites.
