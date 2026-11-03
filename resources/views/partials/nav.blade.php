@@ -7,6 +7,7 @@
         ['route' => 'reliability', 'label' => 'Reliability'],
         ['route' => 'settlements', 'label' => 'Settlements'],
         ['route' => 'thesis',      'label' => 'Thesis'],
+        ['route' => 'quote',       'label' => 'Quote'],
     ];
 @endphp
 
