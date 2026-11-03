@@ -71,3 +71,27 @@ test('a provider that has not declined anything reports no reason', function () 
 
     expect($provider->failureReason())->toBeNull();
 });
+
+test('a chain is addressed in its own format, by either spelling', function () {
+    // The polled corridors spell chains out; the registry uses NEAR's codes.
+    // Resolving only the first spelling handed Solana an EVM address, which
+    // LiFi and Relay rejected with HTTP 400 instead of quoting.
+    $provider = new LiFiProvider;
+    $method = new ReflectionMethod($provider, 'placeholder');
+
+    $solana = config('comparators.placeholder_address.solana');
+    $evm = config('comparators.placeholder_address.evm');
+
+    expect($method->invoke($provider, 'solana'))->toBe($solana)
+        ->and($method->invoke($provider, 'sol'))->toBe($solana)
+        ->and($method->invoke($provider, 'eth'))->toBe($evm)
+        ->and($method->invoke($provider, 'base'))->toBe($evm);
+});
+
+test('a chain we cannot address is declined, not quoted wrongly', function () {
+    $provider = new LiFiProvider;
+    $method = new ReflectionMethod($provider, 'placeholder');
+
+    // No address format configured for TON, so there is nothing safe to send.
+    expect($method->invoke($provider, 'ton'))->toBeNull();
+});
