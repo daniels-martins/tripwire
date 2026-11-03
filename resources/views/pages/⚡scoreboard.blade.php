@@ -149,7 +149,7 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
     /**
      * Typical-to-tail latency per provider. Drawn as a P50 to P95 range rather
      * than two coloured series, because this is one measure's spread, not two
-     * entities — colour stays reserved for provider identity.
+     * entities - colour stays reserved for provider identity.
      */
     #[Computed]
     public function latency(): array
@@ -260,7 +260,7 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
             <div>
                 <h1 class="text-2xl font-semibold tracking-tight">Tripwire</h1>
                 <p class="mt-1 text-sm text-viz-ink-soft">
-                    Which cross-chain route actually gives you the best price — measured against
+                    Which cross-chain route actually gives you the best price - measured against
                     the CEX reference mid, not advertised.
                 </p>
             </div>

@@ -148,7 +148,7 @@ new #[Layout('layouts.public')] #[Title('Reliability')] class extends Component
                                 <td class="px-1 py-1 text-center">
                                     @if ($cell === null)
                                         <div class="rounded-md border border-dashed border-viz-grid px-2 py-2 text-xs text-viz-ink-muted"
-                                             title="No quotes attempted">—</div>
+                                             title="No quotes attempted"> - </div>
                                     @else
                                         <div class="tabular rounded-md px-2 py-2 text-xs font-medium {{ $this->rampClass($cell['pct']) }}"
                                              title="{{ $cell['ok'] }}/{{ $cell['n'] }} succeeded">
