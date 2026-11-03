@@ -31,14 +31,14 @@ new #[Layout('layouts.public')] #[Title('Investment thesis')] class extends Comp
     public function memoHtml(): ?string
     {
         // GenerateMemo writes with storage_path('app/memo'), while the `local`
-        // disk roots at storage/app/private — so read the path it actually uses.
+        // disk roots at storage/app/private - so read the path it actually uses.
         $path = storage_path('app/memo/investment-memo.md');
 
         if (! File::exists($path)) {
             return null;
         }
 
-        // Drop the memo's own tripwire table — the cards above already carry it,
+        // Drop the memo's own tripwire table - the cards above already carry it,
         // and the same numbers twice on one page is padding, not evidence.
         $markdown = preg_replace(
             '/^## Tripwire Panel.*?(?=^## )/ms',
@@ -48,7 +48,15 @@ new #[Layout('layouts.public')] #[Title('Investment thesis')] class extends Comp
 
         // The memo puts Generated / Data window / Total quotes on their own lines;
         // CommonMark folds single newlines into one paragraph, so keep the breaks.
-        $html = Str::markdown($markdown, ['renderer' => ['soft_break' => '<br>']]);
+        // The memo is generated from our own data, but the settlements it draws
+        // on are ingested from chain. Escaping raw HTML costs nothing here (the
+        // template carries none) and removes the whole class of injection
+        // rather than relying on today's data shape staying numeric.
+        $html = Str::markdown($markdown, [
+            'renderer' => ['soft_break' => '<br>'],
+            'html_input' => 'escape',
+            'allow_unsafe_links' => false,
+        ]);
 
         // CommonMark emits bare <table> elements. Without a wrapper they are wider
         // than a phone viewport and drag the whole page sideways, so give each one
@@ -123,8 +131,7 @@ new #[Layout('layouts.public')] #[Title('Investment thesis')] class extends Comp
                     </svg>
                     <p class="text-sm">
                         <span class="font-medium">Only one route is quoting.</span>
-                        Tripwires that compare NEAR against the market — win rate and spread edge —
-                        are measuring NEAR against itself until a second provider is polling. Read
+                        Tripwires that compare NEAR against the market - win rate and spread edge - are measuring NEAR against itself until a second provider is polling. Read
                         those two as not yet tested rather than as results.
                     </p>
                 </div>

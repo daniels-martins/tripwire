@@ -1,13 +1,13 @@
-# Tripwire — NEAR Bridge Price Comparison & Investment Thesis
+# Tripwire - NEAR Bridge Price Comparison & Investment Thesis
 
 **Track**: Investment Thesis
 **Team**: @Brainycyber
 
 ## What This Is
 
-A price comparison scanner for crypto bridges — like Skyscanner, but for moving crypto between chains. It polls bridge quotes every 15 minutes across 8 trading corridors, compares them against reference rates derived from spot USD pairs on a centralised exchange, and checks the receipts by pulling actual on-chain settlement data from NEAR's `intents.near` contract.
+A price comparison scanner for crypto bridges - like Skyscanner, but for moving crypto between chains. It polls bridge quotes every 15 minutes across 8 trading corridors, compares them against reference rates derived from spot USD pairs on a centralised exchange, and checks the receipts by pulling actual on-chain settlement data from NEAR's `intents.near` contract.
 
-The scanner feeds an investment thesis report on NEAR, complete with tripwires — falsifiable claims that re-evaluate themselves on every run. If a tripwire trips, the thesis needs revision.
+The scanner feeds an investment thesis report on NEAR, complete with tripwires - falsifiable claims that re-evaluate themselves on every run. If a tripwire trips, the thesis needs revision.
 
 ## Quick Start (Zero API Keys Required)
 
@@ -44,7 +44,7 @@ seeds 7 days of demo data (~12,000 quotes, ~140 settlements across 4 corridors),
 | Across | disabled | Moves the *same* asset between chains, so it cannot quote a cross-asset corridor |
 | Stargate | disabled | Quote API deprecated; successor endpoint 404s for these pairs |
 
-Four of the eight corridors are uncontested — BTC as a *source* cannot be dry-quoted without a
+Four of the eight corridors are uncontested - BTC as a *source* cannot be dry-quoted without a
 funded wallet, and no comparator supports NEAR as a chain. On those, NEAR Intents is the only
 route that exists, which is itself part of the finding.
 
@@ -52,7 +52,7 @@ route that exists, which is itself part of the finding.
 
 | Do | See |
 |----|-----|
-| Open `/` | Scoreboard — routes ranked by median spread, with latency spread |
+| Open `/` | Scoreboard - routes ranked by median spread, with latency spread |
 | Open `/spread` | Median spread over time, one line per route |
 | Open `/size-curve` | How spread changes between $100, $1,000 and $10,000 |
 | Open `/corridors` | Best route per pair, and the pairs nobody quotes |
@@ -70,7 +70,7 @@ route that exists, which is itself part of the finding.
 | `cat storage/app/memo/investment-memo.md` | The generated investment thesis with live data |
 | `cat storage/app/memo/results.json` | Every computation in one JSON file |
 | `php artisan quotes:poll` | Queues one job per corridor × size × route |
-| `php artisan queue:work --stop-when-empty` | **Required** — `quotes:poll` only queues; nothing lands without a worker |
+| `php artisan queue:work --stop-when-empty` | **Required** - `quotes:poll` only queues; nothing lands without a worker |
 
 ## Architecture
 
@@ -80,14 +80,14 @@ External APIs → Laravel Collectors → PostgreSQL → Dashboard / API / Memo
  NearBlocks)                                mat. views)        results.json)
 ```
 
-One Laravel app. Livewire dashboard, materialized SQL views, public JSON API. The dashboard, the report, and the API all read the same materialized views — they cannot disagree.
+One Laravel app. Livewire dashboard, materialized SQL views, public JSON API. The dashboard, the report, and the API all read the same materialized views - they cannot disagree.
 
 ### Data Pipeline
 
-1. **Quote Poller** (`quotes:poll`) — every 15 min, dispatches one job per corridor × size × provider. Each job: fetch dry-run quote → derive the reference rate from each asset's spot USD pair → compute spread in bps → store row.
-2. **Settlement Ingester** (`settlements:ingest`) — pulls `ft_on_transfer` receipts from `intents.near` via NearBlocks API, maps token contracts to corridors, normalizes amounts.
-3. **Materialized Views** (`views:refresh`) — five views aggregate raw data into leaderboard, spread series, size curve, settlement accuracy, and corridor coverage.
-4. **Memo Generator** (`memo:generate`) — evaluates tripwires, gathers all metrics, writes `results.json` + investment memo from template.
+1. **Quote Poller** (`quotes:poll`) - every 15 min, dispatches one job per corridor × size × provider. Each job: fetch dry-run quote → derive the reference rate from each asset's spot USD pair → compute spread in bps → store row.
+2. **Settlement Ingester** (`settlements:ingest`) - pulls `ft_on_transfer` receipts from `intents.near` via NearBlocks API, maps token contracts to corridors, normalizes amounts.
+3. **Materialized Views** (`views:refresh`) - five views aggregate raw data into leaderboard, spread series, size curve, settlement accuracy, and corridor coverage.
+4. **Memo Generator** (`memo:generate`) - evaluates tripwires, gathers all metrics, writes `results.json` + investment memo from template.
 
 ### Tripwires
 

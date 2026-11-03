@@ -13,9 +13,9 @@
 
 ### Why swaps matter more than smart contracts
 
-Most L1 thesis pitches argue about developer adoption, TVL, or dApp counts — all lagging indicators. Swap volume is a leading indicator: money moves to where it's cheapest to move. If NEAR routes the cheapest swaps, capital flows through it whether developers build on NEAR or not.
+Most L1 thesis pitches argue about developer adoption, TVL, or dApp counts - all lagging indicators. Swap volume is a leading indicator: money moves to where it's cheapest to move. If NEAR routes the cheapest swaps, capital flows through it whether developers build on NEAR or not.
 
-Visa doesn't care which store you shop at — it just needs to be the cheapest way to move the payment. NEAR's `intents.near` contract occupies the same position for cross-chain capital: a routing layer where solvers compete on price, driving spreads down structurally rather than through subsidy. The data below measures whether this advantage is real and whether it holds.
+Visa doesn't care which store you shop at - it just needs to be the cheapest way to move the payment. NEAR's `intents.near` contract occupies the same position for cross-chain capital: a routing layer where solvers compete on price, driving spreads down structurally rather than through subsidy. The data below measures whether this advantage is real and whether it holds.
 
 ---
 
@@ -57,11 +57,11 @@ NEAR's spread edge: **{{ spread_edge }} bps** tighter than its competitors there
 
 This thesis holds unless:
 
-1. **NEAR's spread edge disappears** — if the median spread across NEAR corridors climbs above {{ competitiveness_threshold }} bps, the cost advantage is gone and capital has no reason to route through NEAR over alternatives.
-2. **Win rate collapses** — if NEAR wins fewer than {{ dominance_threshold }}% of quote comparisons, it is not the best option often enough to attract sustained flow.
-3. **Settlement slippage** — if users consistently receive more than {{ execution_threshold }} bps less than quoted, trust erodes and volume migrates to more predictable bridges.
+1. **NEAR's spread edge disappears** - if the median spread across NEAR corridors climbs above {{ competitiveness_threshold }} bps, the cost advantage is gone and capital has no reason to route through NEAR over alternatives.
+2. **Win rate collapses** - if NEAR wins fewer than {{ dominance_threshold }}% of quote comparisons, it is not the best option often enough to attract sustained flow.
+3. **Settlement slippage** - if users consistently receive more than {{ execution_threshold }} bps less than quoted, trust erodes and volume migrates to more predictable bridges.
 
-The tripwire panel above evaluates these conditions on every run. A tripped wire doesn't mean the investment is bad — it means the thesis needs updating with new evidence.
+The tripwire panel above evaluates these conditions on every run. A tripped wire doesn't mean the investment is bad - it means the thesis needs updating with new evidence.
 
 ---
 
