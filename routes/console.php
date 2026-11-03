@@ -13,3 +13,8 @@ Schedule::command('views:refresh')->everyFifteenMinutes();
 
 // The thesis page says it regenerates from live data; this is what does it.
 Schedule::command('memo:generate')->hourly();
+
+// Asset and chain tables move rarely, and a stale one only means a missing
+// option rather than a wrong number. Daily is plenty, and it costs four
+// requests, not a polling sweep.
+Schedule::command('registry:sync')->dailyAt('03:30');

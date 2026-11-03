@@ -6,6 +6,12 @@ use App\Services\Providers\OneClickProvider;
 use App\Services\Providers\RelayProvider;
 
 /*
+| 'platform_url' is where a person goes to actually make the swap. We link to
+| each bridge's own site rather than building a pre-filled deep link: the URL
+| formats are undocumented and change, and a malformed one would send someone
+| to the wrong trade with real money. Quotes here are dry runs, so there is no
+| live order to hand over either way.
+|
 | 'slot' picks the route's colour from the validated palette in viz.css.
 | Assigned once and never reassigned: colour follows the route, not its rank,
 | so a filter that changes the field does not repaint the survivors.
@@ -19,6 +25,7 @@ return [
         'class' => OneClickProvider::class,
         'enabled' => true,
         'base_url' => 'https://1click.chaindefuser.com',
+        'platform_url' => 'https://app.near-intents.org',
         'api_key' => env('ONECLICK_API_KEY'),
     ],
 
@@ -28,6 +35,7 @@ return [
         'class' => LiFiProvider::class,
         'enabled' => env('LIFI_ENABLED', true),
         'base_url' => 'https://li.quest',
+        'platform_url' => 'https://jumper.exchange',
     ],
 
     'relay' => [
@@ -36,6 +44,7 @@ return [
         'class' => RelayProvider::class,
         'enabled' => env('RELAY_ENABLED', true),
         'base_url' => 'https://api.relay.link',
+        'platform_url' => 'https://relay.link',
         'api_key' => env('RELAY_API_KEY'),
     ],
 
@@ -45,6 +54,7 @@ return [
         'class' => DeBridgeProvider::class,
         'enabled' => env('DEBRIDGE_ENABLED', true),
         'base_url' => 'https://dln.debridge.finance',
+        'platform_url' => 'https://app.debridge.finance',
     ],
 
     /*
@@ -60,6 +70,7 @@ return [
         'class' => null,
         'enabled' => false,
         'base_url' => 'https://app.across.to',
+        'platform_url' => 'https://app.across.to',
         'note' => 'Same-asset bridge; cannot quote cross-asset corridors.',
     ],
 
@@ -74,6 +85,7 @@ return [
         'class' => null,
         'enabled' => false,
         'base_url' => 'https://stargate.finance',
+        'platform_url' => 'https://stargate.finance',
         'note' => 'Quote API deprecated; successor endpoint 404s for these pairs.',
     ],
 ];
