@@ -8,11 +8,14 @@ test('responses carry the headers Nginx does not set', function () {
     $response = $this->get(route('home'));
 
     $response->assertOk()
-        ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
-        ->assertHeader('X-Content-Type-Options', 'nosniff')
-        ->assertHeader('X-Frame-Options', 'SAMEORIGIN');
+        ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
     expect($response->headers->get('Permissions-Policy'))->toContain('geolocation=()');
+
+    // Nginx owns these two and appends them after PHP. Setting them here as
+    // well sent each one twice, so the app must leave them alone.
+    expect($response->headers->has('X-Frame-Options'))->toBeFalse()
+        ->and($response->headers->has('X-Content-Type-Options'))->toBeFalse();
 });
 
 test('HSTS is sent only over TLS', function () {
