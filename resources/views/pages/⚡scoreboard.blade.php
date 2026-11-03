@@ -25,7 +25,17 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
     public function mount(): void
     {
         if ($this->corridor === '') {
-            $this->corridor = $this->corridors[0] ?? 'BTC_USDC';
+            // Alphabetical order put BTC_ETH first, which only NEAR serves,
+            // so the front page opened on a one-route table and read as if
+            // the scanner only ever showed a winner. Open where there is a
+            // contest; ties break alphabetically so the choice is stable.
+            $this->corridor = DB::table('raw_quotes')
+                ->where('ok', true)
+                ->whereNotNull('spread_bps')
+                ->groupBy('corridor')
+                ->orderByRaw('COUNT(DISTINCT provider) DESC, corridor ASC')
+                ->value('corridor')
+                ?? ($this->corridors[0] ?? 'BTC_USDC');
         }
     }
 
@@ -58,10 +68,18 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
         return config("corridors.trade_sizes.{$this->size}", 1000);
     }
 
+    /**
+     * Every route, cheapest first, including the ones with no price.
+     *
+     * Listing only the routes that quoted made a corridor nobody else serves
+     * look like a one-horse scoreboard, when the finding is the opposite:
+     * three routes could not serve it at all. A blank row with a reason says
+     * more than a missing row.
+     */
     #[Computed]
     public function rows(): array
     {
-        return DB::table('raw_quotes')
+        $priced = DB::table('raw_quotes')
             ->selectRaw("
                 provider,
                 COUNT(*) as sample_count,
@@ -76,7 +94,56 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
             ->groupBy('provider')
             ->orderBy('median_spread_bps')
             ->get()
-            ->all();
+            ->keyBy('provider');
+
+        // Why a route has no price here, in its own words.
+        $reasons = DB::table('raw_quotes')
+            ->selectRaw('DISTINCT ON (provider) provider, error')
+            ->where('corridor', $this->corridor)
+            ->where('trade_size', $this->size)
+            ->where('ok', false)
+            ->orderByRaw('provider, quoted_at DESC')
+            ->pluck('error', 'provider');
+
+        $rows = [];
+
+        foreach (config('providers') as $slug => $definition) {
+            if (! ($definition['enabled'] ?? false)) {
+                continue;
+            }
+
+            if ($priced->has($slug)) {
+                $row = $priced->get($slug);
+                $row->quoted = true;
+                $rows[] = $row;
+
+                continue;
+            }
+
+            $rows[] = (object) [
+                'provider' => $slug,
+                'quoted' => false,
+                'sample_count' => 0,
+                'median_spread_bps' => null,
+                'median_latency_ms' => null,
+                'last_seen_at' => null,
+                'reason' => $reasons[$slug] ?? 'No quote recorded',
+            ];
+        }
+
+        // Priced routes first, cheapest at the top; the rest follow in the
+        // order config lists them, which is stable.
+        usort($rows, fn ($a, $b) => [! $a->quoted, $a->median_spread_bps ?? INF]
+            <=> [! $b->quoted, $b->median_spread_bps ?? INF]);
+
+        return $rows;
+    }
+
+    /** @return array<int, object> */
+    #[Computed]
+    public function pricedRows(): array
+    {
+        return array_values(array_filter($this->rows, fn ($r) => $r->quoted));
     }
 
     /**
@@ -113,7 +180,7 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
     #[Computed]
     public function headline(): object
     {
-        $rows = $this->rows;
+        $rows = $this->pricedRows;
         $best = $rows[0] ?? null;
         $next = $rows[1] ?? null;
 
@@ -124,6 +191,7 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                 ? round((float) $next->median_spread_bps - (float) $best->median_spread_bps, 1)
                 : null,
             'routes' => count($rows),
+            'offered' => count($this->rows),
             'samples' => array_sum(array_map(fn ($r) => (int) $r->sample_count, $rows)),
         ];
     }
@@ -265,13 +333,14 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                 </thead>
                 <tbody>
                     @forelse ($this->rows as $i => $row)
-                        <tr wire:key="row-{{ $row->provider }}" class="border-b border-viz-grid/60 last:border-0">
+                        <tr wire:key="row-{{ $row->provider }}"
+                            class="border-b border-viz-grid/60 last:border-0 {{ $row->quoted ? '' : 'opacity-60' }}">
                             <td class="px-4 py-2.5">
                                 <div class="flex items-center gap-2.5 whitespace-nowrap">
                                     <span class="size-2.5 shrink-0 rounded-full"
                                           style="background-color: var(--color-series-{{ config('providers.'.$row->provider.'.slot', 1) }})"></span>
                                     <span class="font-medium">{{ config('providers.'.$row->provider.'.name', $row->provider) }}</span>
-                                    @if ($i === 0)
+                                    @if ($i === 0 && $row->quoted)
                                         <span class="inline-flex items-center gap-1 rounded-full bg-status-good/15 px-2 py-0.5 text-[11px] font-medium text-status-good">
                                             <svg class="size-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
                                                 <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd"/>
@@ -281,8 +350,12 @@ new #[Layout('layouts.public')] #[Title('Scoreboard')] class extends Component {
                                     @endif
                                 </div>
                             </td>
-                            <td class="tabular px-4 py-2.5 text-right">{{ number_format($row->median_spread_bps, 1) }} bps</td>
-                            <td class="tabular px-4 py-2.5 text-right text-viz-ink-soft">{{ number_format($row->sample_count) }}</td>
+                            @if ($row->quoted)
+                                <td class="tabular px-4 py-2.5 text-right">{{ number_format($row->median_spread_bps, 1) }} bps</td>
+                                <td class="tabular px-4 py-2.5 text-right text-viz-ink-soft">{{ number_format($row->sample_count) }}</td>
+                            @else
+                                <td class="px-4 py-2.5 text-right text-xs text-viz-ink-soft" colspan="2">{{ $row->reason }}</td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
