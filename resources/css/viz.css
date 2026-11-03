@@ -159,6 +159,17 @@ select {
     background-repeat: no-repeat;
     padding-right: 2rem;
 }
+/*
+ * The dropdown list is rendered by the browser, not the page, so it does not
+ * inherit the surface. Without this the options were white on white and the
+ * quote page's asset pickers could not be read at all.
+ */
+select option,
+select optgroup {
+    background-color: var(--color-viz-surface);
+    color: var(--color-viz-ink);
+}
+
 select:focus-visible {
     outline: 2px solid var(--color-series-1);
     outline-offset: 1px;

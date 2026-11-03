@@ -108,7 +108,7 @@ new #[Layout('layouts.public')] #[Title('Quote a corridor')] class extends Compo
         <h1 class="text-2xl font-semibold tracking-tight">Quote a corridor</h1>
         <p class="mt-1 max-w-2xl text-sm text-viz-ink-muted">
             Any asset NEAR can route, at any size, priced live against the same reference the
-            charts use. Nothing here is polled on a schedule &mdash; it runs when you ask.
+            charts use. Nothing here is polled on a schedule - it runs when you ask.
         </p>
     </header>
 
@@ -120,7 +120,7 @@ new #[Layout('layouts.public')] #[Title('Quote a corridor')] class extends Compo
         <div class="grid gap-3 rounded-xl border border-viz-grid bg-viz-surface p-4 sm:grid-cols-[1fr_1fr_auto_auto]">
             <label class="block">
                 <span class="mb-1 block text-xs font-medium uppercase tracking-wide text-viz-ink-muted">From</span>
-                <select wire:model="from" class="w-full">
+                <select wire:model="from" class="w-full rounded-md border border-viz-axis bg-viz-surface px-3 py-1.5 text-sm">
                     <option value="">Select an asset…</option>
                     @foreach ($this->options as $chain => $tokens)
                         <optgroup label="{{ strtoupper($chain) }}">
@@ -134,7 +134,7 @@ new #[Layout('layouts.public')] #[Title('Quote a corridor')] class extends Compo
 
             <label class="block">
                 <span class="mb-1 block text-xs font-medium uppercase tracking-wide text-viz-ink-muted">To</span>
-                <select wire:model="to" class="w-full">
+                <select wire:model="to" class="w-full rounded-md border border-viz-axis bg-viz-surface px-3 py-1.5 text-sm">
                     <option value="">Select an asset…</option>
                     @foreach ($this->options as $chain => $tokens)
                         <optgroup label="{{ strtoupper($chain) }}">
@@ -149,7 +149,7 @@ new #[Layout('layouts.public')] #[Title('Quote a corridor')] class extends Compo
             <label class="block">
                 <span class="mb-1 block text-xs font-medium uppercase tracking-wide text-viz-ink-muted">Amount (USD)</span>
                 <input type="text" inputmode="decimal" wire:model="amount"
-                       class="tabular w-full sm:w-32" placeholder="1000">
+                       class="tabular w-full rounded-md border border-viz-axis bg-viz-surface px-3 py-1.5 text-sm sm:w-32" placeholder="1000">
             </label>
 
             <div class="flex items-end">
@@ -196,10 +196,10 @@ new #[Layout('layouts.public')] #[Title('Quote a corridor')] class extends Compo
                                     @endif
                                 </td>
                                 <td class="tabular px-4 py-2.5 text-right">
-                                    {{ $row['spread_bps'] !== null ? number_format($row['spread_bps'], 1).' bps' : '—' }}
+                                    {{ $row['spread_bps'] !== null ? number_format($row['spread_bps'], 1).' bps' : '-' }}
                                 </td>
                                 <td class="tabular px-4 py-2.5 text-right text-viz-ink-soft">
-                                    {{ $row['latency_ms'] !== null ? number_format($row['latency_ms']).' ms' : '—' }}
+                                    {{ $row['latency_ms'] !== null ? number_format($row['latency_ms']).' ms' : '-' }}
                                 </td>
                                 <td class="px-4 py-2.5 text-right">
                                     @if ($row['platform_url'])

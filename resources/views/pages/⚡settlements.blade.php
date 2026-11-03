@@ -78,8 +78,8 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
                 <p class="text-sm">
                     <span class="font-medium">Slippage is not measurable yet.</span>
                     Deposits, transaction hashes and block heights below are read from the chain and
-                    can be checked on NearBlocks. The delivered amount is not captured — it is not
-                    yet parsed out of the settlement transaction — so there is nothing to compare a
+                    can be checked on NearBlocks. The delivered amount is not captured - it is not
+                    yet parsed out of the settlement transaction - so there is nothing to compare a
                     quote against. Quoted versus delivered becomes a real check once that lands.
                 </p>
             </div>
@@ -126,7 +126,7 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
                             <td class="px-4 py-2.5">
                                 @if (\App\Support\DemoData::isDemoHash($row->tx_hash))
                                     <span class="font-mono text-xs text-viz-ink-muted"
-                                          title="Seeded demo row — not a real transaction">
+                                          title="Seeded demo row - not a real transaction">
                                         {{ substr($row->tx_hash, 0, 10) }}… <span class="not-italic">(demo)</span>
                                     </span>
                                 @else
@@ -140,7 +140,7 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
                             <td class="px-4 py-2.5">{{ $this->corridorLabels[$row->corridor] ?? $row->corridor }}</td>
                             <td class="tabular px-4 py-2.5 text-right">{{ rtrim(rtrim(number_format($row->quoted_amount, 6), '0'), '.') }}</td>
                             <td class="tabular px-4 py-2.5 text-right text-viz-ink-soft">
-                                {{ $row->delivered_amount === null ? '—' : rtrim(rtrim(number_format($row->delivered_amount, 4), '0'), '.') }}
+                                {{ $row->delivered_amount === null ? ' - ' : rtrim(rtrim(number_format($row->delivered_amount, 4), '0'), '.') }}
                             </td>
                             <td class="tabular px-4 py-2.5 text-right text-viz-ink-soft">{{ number_format($row->block_height) }}</td>
                             <td class="tabular px-4 py-2.5 text-right text-viz-ink-soft whitespace-nowrap">
@@ -162,7 +162,7 @@ new #[Layout('layouts.public')] #[Title('Settlements')] class extends Component
         <p class="mt-3 text-xs text-viz-ink-muted">
             Transaction hashes link to NearBlocks so any row here can be checked independently.
             @if ($this->summary->n > 0)
-                Blocks {{ number_format($this->summary->from_block) }}–{{ number_format($this->summary->to_block) }}.
+                Blocks {{ number_format($this->summary->from_block) }} - {{ number_format($this->summary->to_block) }}.
             @endif
         </p>
     </div>

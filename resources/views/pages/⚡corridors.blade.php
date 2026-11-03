@@ -44,7 +44,7 @@ new #[Layout('layouts.public')] #[Title('Corridors')] class extends Component
         ])->all();
     }
 
-    /** Corridors configured but with nothing in the view yet — coverage is a finding. */
+    /** Corridors configured but with nothing in the view yet - coverage is a finding. */
     #[Computed]
     public function missing(): array
     {
@@ -63,7 +63,7 @@ new #[Layout('layouts.public')] #[Title('Corridors')] class extends Component
                 <h1 class="text-2xl font-semibold tracking-tight">Corridors</h1>
                 <p class="mt-1 text-sm text-viz-ink-soft">
                     Best route on each pair, at the selected size. Coverage matters as much as
-                    price — a corridor only one route serves is a position, not a rounding error.
+                    price - a corridor only one route serves is a position, not a rounding error.
                 </p>
             </div>
         </header>
@@ -114,7 +114,7 @@ new #[Layout('layouts.public')] #[Title('Corridors')] class extends Component
                             </div>
                             <div>
                                 <dt class="text-viz-ink-muted">Latency</dt>
-                                <dd class="tabular mt-0.5">{{ $card->median_latency_ms ? number_format($card->median_latency_ms).' ms' : '—' }}</dd>
+                                <dd class="tabular mt-0.5">{{ $card->median_latency_ms ? number_format($card->median_latency_ms).' ms' : '-' }}</dd>
                             </div>
                             <div>
                                 <dt class="text-viz-ink-muted">Samples</dt>
