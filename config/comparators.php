@@ -77,6 +77,24 @@ return [
         'debridge' => ['ethereum' => 1, 'base' => 8453, 'solana' => 7565164],
     ],
 
+    /*
+     | Which address format a chain needs. The polled corridors spell chains
+     | out ('solana'); the registry uses NEAR's codes ('sol'), and a Solana
+     | destination was being handed an EVM address, which LiFi and Relay
+     | rejected with HTTP 400. Both spellings resolve here.
+     |
+     | A chain absent from this map is one we cannot address. Those corridors
+     | say so rather than sending a request we already know is malformed.
+     */
+    'chain_family' => [
+        'solana' => 'solana', 'sol' => 'solana',
+        'bitcoin' => 'bitcoin', 'btc' => 'bitcoin',
+        'ethereum' => 'evm', 'eth' => 'evm',
+        'base' => 'evm', 'arb' => 'evm', 'op' => 'evm', 'pol' => 'evm',
+        'avax' => 'evm', 'bsc' => 'evm', 'gnosis' => 'evm', 'scroll' => 'evm',
+        'monad' => 'evm', 'bera' => 'evm', 'abs' => 'evm',
+    ],
+
     'placeholder_address' => [
         'evm' => '0x000000000000000000000000000000000000dEaD',
         'solana' => 'HN7cABqLq46Es1jh92dQQisAq662SmxELLLsHHe4YWrH',

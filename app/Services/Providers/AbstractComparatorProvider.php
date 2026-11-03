@@ -48,6 +48,15 @@ abstract class AbstractComparatorProvider implements QuoteProvider
             return $this->fail('Token not configured for this chain');
         }
 
+        $fromAddress = $this->placeholder($map['from']['chain']);
+        $toAddress = $this->placeholder($map['to']['chain']);
+
+        // Sending an EVM address as a Solana recipient is how this returned
+        // HTTP 400 rather than a quote. If we cannot address an end, say so.
+        if ($fromAddress === null || $toAddress === null) {
+            return $this->fail('No address format for this chain');
+        }
+
         return [
             'from_chain' => $fromChain,
             'to_chain' => $toChain,
@@ -55,16 +64,21 @@ abstract class AbstractComparatorProvider implements QuoteProvider
             'to_token' => $toToken,
             'from_decimals' => (int) $map['from']['decimals'],
             'to_decimals' => (int) $map['to']['decimals'],
-            'from_address' => $this->placeholder($map['from']['chain']),
-            'to_address' => $this->placeholder($map['to']['chain']),
+            'from_address' => $fromAddress,
+            'to_address' => $toAddress,
         ];
     }
 
-    protected function placeholder(string $chain): string
+    /** Null when we have no address format for the chain. */
+    protected function placeholder(string $chain): ?string
     {
-        return config('comparators.placeholder_address.'.(
-            in_array($chain, ['solana', 'bitcoin'], true) ? $chain : 'evm'
-        ));
+        $family = config('comparators.chain_family.'.$chain);
+
+        if ($family === null) {
+            return null;
+        }
+
+        return config('comparators.placeholder_address.'.$family);
     }
 
     protected function baseUnits(float $sizeUsd, string $fromAsset, int $decimals): ?string
