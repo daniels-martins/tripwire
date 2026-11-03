@@ -69,14 +69,10 @@ class GenerateMemo extends Command
             ->selectRaw('MIN(quoted_at) AS earliest, MAX(quoted_at) AS latest, COUNT(*) AS total_quotes')
             ->first();
 
-        $nearMedian = DB::table('v_leaderboard')
-            ->whereIn('corridor', ['NEAR_USDC', 'USDC_NEAR'])
-            ->selectRaw('(percentile_cont(0.5) WITHIN GROUP (ORDER BY median_spread_bps))::numeric(12,4) AS val')
-            ->value('val');
-
-        $globalMedian = DB::table('v_leaderboard')
-            ->selectRaw('(percentile_cont(0.5) WITHIN GROUP (ORDER BY median_spread_bps))::numeric(12,4) AS val')
-            ->value('val');
+        // One definition, shared with the tripwires.
+        $comparison = app(TripwireEvaluator::class)->spreadComparison();
+        $nearMedian = $comparison['near_median'];
+        $rivalMedian = $comparison['rival_median'];
 
         $settlementCount = DB::table('settlements')->count();
 
@@ -89,9 +85,9 @@ class GenerateMemo extends Command
             'total_quotes' => $dataWindow ? (int) $dataWindow->total_quotes : 0,
             'total_settlements' => $settlementCount,
             'corridor_count' => count($corridorCoverage),
-            'near_median_spread_bps' => $nearMedian ? (float) $nearMedian : null,
-            'global_median_spread_bps' => $globalMedian ? (float) $globalMedian : null,
-            'spread_edge_bps' => ($nearMedian && $globalMedian) ? round((float) $globalMedian - (float) $nearMedian, 4) : null,
+            'near_median_spread_bps' => $nearMedian,
+            'rival_median_spread_bps' => $rivalMedian,
+            'spread_edge_bps' => $comparison['edge'] !== null ? round($comparison['edge'], 4) : null,
             'tripwires' => $tripwires,
             'leaderboard' => $leaderboard,
             'corridor_coverage' => $corridorCoverage,
@@ -154,7 +150,7 @@ class GenerateMemo extends Command
             '{{ corridor_count }}' => (string) $data['corridor_count'],
             '{{ tripwire_table }}' => $tripwireRows,
             '{{ near_median_spread }}' => $data['near_median_spread_bps'] !== null ? number_format($data['near_median_spread_bps'], 2) : 'N/A',
-            '{{ global_median_spread }}' => $data['global_median_spread_bps'] !== null ? number_format($data['global_median_spread_bps'], 2) : 'N/A',
+            '{{ global_median_spread }}' => $data['rival_median_spread_bps'] !== null ? number_format($data['rival_median_spread_bps'], 2) : 'N/A',
             '{{ spread_edge }}' => $data['spread_edge_bps'] !== null ? number_format($data['spread_edge_bps'], 2) : 'N/A',
             '{{ leaderboard_table }}' => $leaderboardRows,
             '{{ corridor_table }}' => $corridorRows,

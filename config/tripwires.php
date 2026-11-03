@@ -5,7 +5,7 @@ return [
     'definitions' => [
         'competitiveness' => [
             'name' => 'competitiveness',
-            'description' => 'NEAR median spread stays below threshold — the network remains price-competitive for cross-chain swaps.',
+            'description' => 'NEAR median spread, across every corridor it serves, stays below threshold — the network remains price-competitive for cross-chain swaps.',
             'metric' => 'near_median_spread_bps',
             'operator' => '<',
             'threshold' => 50.0,
@@ -13,7 +13,7 @@ return [
 
         'dominance' => [
             'name' => 'dominance',
-            'description' => 'NEAR win rate exceeds threshold across all corridors — NEAR wins the quote more often than not.',
+            'description' => 'NEAR win rate exceeds threshold on corridors where a competitor also quotes — NEAR wins the quote more often than not, where there is something to win against.',
             'metric' => 'near_win_rate_pct',
             'operator' => '>',
             'threshold' => 40.0,
@@ -37,7 +37,7 @@ return [
 
         'bear_case' => [
             'name' => 'bear_case',
-            'description' => 'NEAR spread edge over the global median exceeds threshold — the thesis breaks if this advantage disappears.',
+            'description' => 'NEAR spread edge over its competitors, on the corridors they both quote, exceeds threshold — the thesis breaks if this advantage disappears.',
             'metric' => 'spread_edge_bps',
             'operator' => '>',
             'threshold' => 5.0,

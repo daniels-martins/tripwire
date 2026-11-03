@@ -34,8 +34,8 @@ Visa doesn't care which store you shop at — it just needs to be the cheapest w
 ### Spread Competitiveness
 
 NEAR's median spread across all NEAR corridors: **{{ near_median_spread }} bps**
-Global median spread across all corridors: **{{ global_median_spread }} bps**
-NEAR's spread edge: **{{ spread_edge }} bps** tighter than the global median
+Competitor median spread, on the corridors they and NEAR both quote: **{{ global_median_spread }} bps**
+NEAR's spread edge: **{{ spread_edge }} bps** tighter than its competitors there
 
 | Corridor | Trade Size | Median Spread (bps) | Win Rate | Samples |
 |----------|------------|---------------------|----------|---------|
