@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "vp build",
-    "dev": "vp dev"
+    "build": "node init && vp build",
+    "dev": "node init && vp dev"
   },
   "dependencies": {
     "@laravel/passkeys": "^0.2.0",
